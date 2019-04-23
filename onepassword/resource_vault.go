@@ -10,6 +10,12 @@ func resourceVault() *schema.Resource {
     Read:   resourceVaultRead,
     Create: resourceVaultCreate,
     Delete: resourceVaultDelete,
+    Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+        resourceVaultRead(d, meta)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
     Schema: map[string]*schema.Schema{
       "name": {
         Type:        schema.TypeString,
@@ -47,7 +53,11 @@ func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func getId(d *schema.ResourceData) string {
-  return d.Get("name").(string)
+  if d.Id() != "" {
+    return d.Id()
+  } else {
+    return d.Get("name").(string)
+  }
 }
 
 func resourceVaultDelete(d *schema.ResourceData, meta interface{}) error {

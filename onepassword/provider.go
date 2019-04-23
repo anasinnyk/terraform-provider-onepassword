@@ -42,10 +42,12 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
       // "1password_item":     resourceItem(), TODO: InProgress
 			// "1password_group":    resourceGroup(), TODO: check it in team account
-			"1password_vault":    resourceVault(),
-      // "1password_document": resourceDocument(), TODO: InProgress
-      // "1password_template": resourceTemplate(), TODO: InProgress
-		},
+			"1password_vault": resourceVault(),
+      // "1password_user": resourceDocument(), TODO: InProgress
+    },
+    DataSourcesMap: map[string]*schema.Resource{
+      "1password_vault": dataSourceVault(),
+    },
 		ConfigureFunc: providerConfigure,
 	}
 }
@@ -92,7 +94,7 @@ func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
     Password:  m.data.Get("password").(string),
     SecretKey: m.data.Get("secret_key").(string),
     Subdomain: m.data.Get("subdomain").(string),
-    PathToOp:  "/usr/bin/op",
+    PathToOp:  "/usr/local/bin/op",
     Session:   "",
   }
   if err := op.SignIn(); err != nil {
@@ -132,9 +134,9 @@ func (o *OnePassClient) SignIn() error {
 func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
   args = append(args, fmt.Sprintf("--session=%s", o.Session))
   cmd := exec.Command(o.PathToOp, args...)
-  res, err := cmd.Output()
+  res, err := cmd.CombinedOutput()
   if err != nil {
-    err = fmt.Errorf("Some error in command %v\nError: %s", args, err)
+    err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args, err, res)
   }
   return err, res
 }
