@@ -1,7 +1,6 @@
 package onepassword
 
 import (
-  "log"
   "github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -23,6 +22,11 @@ func resourceVault() *schema.Resource {
         Required:    true,
         Description: "Vault name.",
       },
+      "users": {
+        Type:        schema.TypeList,
+        Optional:    true,
+        Description: "Vault users.",
+      },
     },
   }
 }
@@ -31,7 +35,6 @@ func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
   m := meta.(*Meta)
   err, v := m.onePassClient.ReadVault(getId(d));
   if err != nil {
-    log.Print(err)
     return err
   }
 
@@ -46,7 +49,6 @@ func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
     Name: d.Get("name").(string),
   })
   if err != nil {
-    log.Print(err)
     return err
   }
   return resourceVaultRead(d, meta)
@@ -63,10 +65,8 @@ func getId(d *schema.ResourceData) string {
 func resourceVaultDelete(d *schema.ResourceData, meta interface{}) error {
   m := meta.(*Meta)
   err := m.onePassClient.DeleteVault(getId(d))
-  if err != nil {
-    log.Print(err)
-    return err
+  if err == nil {
+    d.SetId("")
   }
-  d.SetId("")
-  return nil
+  return err
 }

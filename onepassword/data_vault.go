@@ -14,13 +14,6 @@ func dataSourceVault() *schema.Resource {
         Optional:    true,
         Description: "Vault name.",
       },
-      "uuid": {
-        Type:        schema.TypeString,
-        Computed:    true,
-        ForceNew:    true,
-        Optional:    true,
-        Description: "Vault uuid.",
-      },
     },
 	}
 }

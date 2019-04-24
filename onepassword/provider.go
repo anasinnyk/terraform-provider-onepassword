@@ -20,33 +20,51 @@ func Provider() terraform.ResourceProvider {
 			"email": {
 				Type:        schema.TypeString,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("OP_EMAIL", nil),
 				Description: "Set account email address",
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("OP_PASSWORD", nil),
 				Description: "Set account password",
 			},
       "secret_key": {
         Type:        schema.TypeString,
         Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("OP_SECRET_KEY", nil),
         Description: "Set account secret key",
       },
       "subdomain": {
         Type:        schema.TypeString,
         Optional:    true,
         Default:     "my",
+				DefaultFunc: schema.EnvDefaultFunc("OP_SUBDOMAIN", nil),
         Description: "Set alternative subdomain for 1password. From [subdomain].1password.com",
       },
 		},
 		ResourcesMap: map[string]*schema.Resource{
-      // "1password_item":     resourceItem(), TODO: InProgress
-			// "1password_group":    resourceGroup(), TODO: check it in team account
-			"1password_vault": resourceVault(),
-      // "1password_user": resourceDocument(), TODO: InProgress
+      // "op_item_wireless_router": resourceItemWirelessRouter(),
+      // "op_item_software_license": resourceItemSoftwareLicense(),
+      // "op_item_social_security_number": resourceItemSocialSecurityNumber(),
+      // "op_item_server": resourceItemServer(),
+      // "op_item_reward_program": resourceItemRewardProgram(),
+      // "op_item_passport": resourceItemPassport(),
+      // "op_item_outdoor_license": resourceItemOutdoorLicense(),
+      // "op_item_membership": resourceItemMembership(),
+      // "op_item_email_account": resourceItemEmailAccount(),
+      // "op_item_driver_license": resourceItemDriverLicense(),
+      // "op_item_database": resourceItemDatabase(),
+      // "op_item_secure_note": resourceItemSecureNote(),
+      // "op_item_bank_account": resourceItemBankAccount(),
+      // "op_item_identity":    resourceItemIdentity(),
+      // "op_item_credit_card": resourceItemCreditCard(),
+      "op_item_login": resourceItemLogin(),
+			"op_vault":      resourceVault(),
+			// "op_group":    resourceGroup(), TODO: check it in team account
     },
     DataSourcesMap: map[string]*schema.Resource{
-      "1password_vault": dataSourceVault(),
+      "op_vault": dataSourceVault(),
     },
 		ConfigureFunc: providerConfigure,
 	}
@@ -76,6 +94,39 @@ type Vault struct {
   Name        string
 }
 
+type Type string
+
+const (
+  Address Type    = "address"
+  String Type     = "string"
+  URL Type        = "URL"
+  Email Type      = "email"
+  Date Type       = "date"
+  MounthYear Type = "mounthYear"
+  Concealed Type  = "concealed"
+  Phone Type      = "phone"
+)
+
+type Field struct {
+  k Type
+  n string
+  t string //title
+  v interface{} //value
+}
+
+type Sections struct {
+  Title string
+  Fields []Field
+}
+
+type Item struct {
+  Vault Vault
+  Title string
+  Tags  []string
+  URL   string
+  Sections Sections
+}
+
 type Meta struct {
 	data          *schema.ResourceData
   onePassClient *OnePassClient
@@ -98,7 +149,6 @@ func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
     Session:   "",
   }
   if err := op.SignIn(); err != nil {
-    log.Print(err)
     return err, nil
   }
   return nil, op
@@ -117,11 +167,11 @@ func (o *OnePassClient) SignIn() error {
 
   out, err := cmd.CombinedOutput()
   if err != nil {
-    log.Print("SIGNIN ERROR: ", err)
+    log.Print("[ERROR] ", err)
     return err
   }
 
-  log.Print("SignIn Output: ", out)
+  log.Print("[DEBUG] SignIn Output: ", out)
   r := regexp.MustCompile(fmt.Sprintf("export OP_SESSION_%s=\"(.+)\"", strings.Replace(o.Subdomain, "-", "_", 1)))
   session := r.FindStringSubmatch(string(out))[1]
   if session == "" {
