@@ -15,14 +15,14 @@ const (
 )
 
 const (
-	TypeAddress    SectionFieldType = "address"
-	TypeString     SectionFieldType = "string"
-	TypeURL        SectionFieldType = "URL"
-	TypeEmail      SectionFieldType = "email"
-	TypeDate       SectionFieldType = "date"
-	TypeMounthYear SectionFieldType = "mounthYear"
-	TypeConcealed  SectionFieldType = "concealed"
-	TypePhone      SectionFieldType = "phone"
+	TypeAddress   SectionFieldType = "address"
+	TypeString    SectionFieldType = "string"
+	TypeURL       SectionFieldType = "URL"
+	TypeEmail     SectionFieldType = "email"
+	TypeDate      SectionFieldType = "date"
+	TypeMonthYear SectionFieldType = "monthYear"
+	TypeConcealed SectionFieldType = "concealed"
+	TypePhone     SectionFieldType = "phone"
 )
 
 type Address struct {
@@ -68,6 +68,7 @@ type Field struct {
 type Overview struct {
 	Title string
 	Url   string
+	Tags  []string
 }
 
 func (o *OnePassClient) ReadItem(id string, vaultId string) (error, *Item) {

@@ -11,8 +11,8 @@ func resourceGroup() *schema.Resource {
 		Delete: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				resourceGroupRead(d, meta)
-				return []*schema.ResourceData{d}, nil
+				err := resourceGroupRead(d, meta)
+				return []*schema.ResourceData{d}, err
 			},
 		},
 		Schema: map[string]*schema.Schema{
