@@ -4,14 +4,14 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceVault() *schema.Resource {
+func resourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceVaultRead,
-		Create: resourceVaultCreate,
-		Delete: resourceVaultDelete,
+		Read:   resourceGroupRead,
+		Create: resourceGroupCreate,
+		Delete: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				resourceVaultRead(d, meta)
+				resourceGroupRead(d, meta)
 				return []*schema.ResourceData{d}, nil
 			},
 		},
@@ -20,15 +20,15 @@ func resourceVault() *schema.Resource {
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Required:    true,
-				Description: "Vault name.",
+				Description: "Group name.",
 			},
 		},
 	}
 }
 
-func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err, v := m.onePassClient.ReadVault(getId(d))
+	err, v := m.onePassClient.ReadGroup(getId(d))
 	if err != nil {
 		return err
 	}
@@ -38,20 +38,20 @@ func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err, _ := m.onePassClient.CreateVault(&Vault{
+	err, _ := m.onePassClient.CreateGroup(&Group{
 		Name: d.Get("name").(string),
 	})
 	if err != nil {
 		return err
 	}
-	return resourceVaultRead(d, meta)
+	return resourceGroupRead(d, meta)
 }
 
-func resourceVaultDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err := m.onePassClient.DeleteVault(getId(d))
+	err := m.onePassClient.DeleteGroup(getId(d))
 	if err == nil {
 		d.SetId("")
 	}
