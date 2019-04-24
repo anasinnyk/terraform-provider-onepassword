@@ -4,7 +4,7 @@ import "github.com/hashicorp/terraform/helper/schema"
 
 func dataSourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGroupRead,
+		Read: resourceGroupRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -15,8 +15,4 @@ func dataSourceGroup() *schema.Resource {
 			},
 		},
 	}
-}
-
-func dataSourceGroupRead(d *schema.ResourceData, meta interface{}) error {
-	return resourceGroupRead(d, meta)
 }

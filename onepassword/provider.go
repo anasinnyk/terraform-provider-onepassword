@@ -17,19 +17,19 @@ func Provider() terraform.ResourceProvider {
 		Schema: map[string]*schema.Schema{
 			"email": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_EMAIL", nil),
 				Description: "Set account email address",
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_PASSWORD", nil),
 				Description: "Set account password",
 			},
 			"secret_key": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_SECRET_KEY", nil),
 				Description: "Set account secret key",
 			},
@@ -62,8 +62,9 @@ func Provider() terraform.ResourceProvider {
 			"op_group":      resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-      "op_vault": dataSourceVault(),
-      "op_group": dataSourceGroup(),
+			"op_item_login": dataSourceItemLogin(),
+			"op_vault":      dataSourceVault(),
+			"op_group":      dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -75,8 +76,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 const ONE_PASSWORD_COMMAND_CREATE = "create"
 const ONE_PASSWORD_COMMAND_DELETE = "delete"
-const ONE_PASSWORD_COMMAND_GET = "get"
 const ONE_PASSWORD_COMMAND_UPDATE = "update"
+const ONE_PASSWORD_COMMAND_GET = "get"
 const ONE_PASSWORD_COMMAND_ADD = "add"
 
 type OnePassClient struct {
@@ -86,39 +87,6 @@ type OnePassClient struct {
 	Subdomain string
 	PathToOp  string
 	Session   string
-}
-
-type Type string
-
-const (
-	Address    Type = "address"
-	String     Type = "string"
-	URL        Type = "URL"
-	Email      Type = "email"
-	Date       Type = "date"
-	MounthYear Type = "mounthYear"
-	Concealed  Type = "concealed"
-	Phone      Type = "phone"
-)
-
-type Field struct {
-	k Type
-	n string
-	t string      //title
-	v interface{} //value
-}
-
-type Sections struct {
-	Title  string
-	Fields []Field
-}
-
-type Item struct {
-	Vault    Vault
-	Title    string
-	Tags     []string
-	URL      string
-	Sections Sections
 }
 
 type Meta struct {
@@ -191,4 +159,9 @@ func getId(d *schema.ResourceData) string {
 	} else {
 		return d.Get("name").(string)
 	}
+}
+
+func (o *OnePassClient) Delete(resource string, id string) error {
+	err, _ := o.runCmd(ONE_PASSWORD_COMMAND_DELETE, resource, id)
+	return err
 }

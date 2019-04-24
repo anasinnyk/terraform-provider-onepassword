@@ -4,7 +4,7 @@ import "github.com/hashicorp/terraform/helper/schema"
 
 func dataSourceVault() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVaultRead,
+		Read: resourceVaultRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -15,8 +15,4 @@ func dataSourceVault() *schema.Resource {
 			},
 		},
 	}
-}
-
-func dataSourceVaultRead(d *schema.ResourceData, meta interface{}) error {
-	return resourceVaultRead(d, meta)
 }

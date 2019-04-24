@@ -1,21 +1,10 @@
 package onepassword
 
-import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"log"
-)
+import "github.com/hashicorp/terraform/helper/schema"
 
-func resourceItemLogin() *schema.Resource {
+func dataSourceItemLogin() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemLoginRead,
-		Create: resourceItemLoginCreate,
-		Delete: resourceItemLoginDelete,
-		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				resourceItemLoginRead(d, meta)
-				return []*schema.ResourceData{d}, nil
-			},
-		},
+		Read: resourceItemLoginRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -65,26 +54,4 @@ func resourceItemLogin() *schema.Resource {
 			},
 		},
 	}
-}
-
-func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
-	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
-	log.Printf("[DEBUG] %v", v)
-	if err != nil {
-		return err
-	}
-
-	d.SetId(v.Uuid)
-	d.Set("name", v.Overview.Title)
-	return nil
-}
-
-func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
-	return nil
-}
-
-func resourceItemLoginDelete(d *schema.ResourceData, meta interface{}) error {
-	return nil
 }

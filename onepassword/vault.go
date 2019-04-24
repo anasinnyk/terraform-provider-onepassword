@@ -36,6 +36,5 @@ func (o *OnePassClient) CreateVault(v *Vault) (error, *Vault) {
 }
 
 func (o *OnePassClient) DeleteVault(id string) error {
-	err, _ := o.runCmd(ONE_PASSWORD_COMMAND_DELETE, VAULT_RESOURCE, id)
-	return err
+	return o.Delete(VAULT_RESOURCE, id)
 }

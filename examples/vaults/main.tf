@@ -1,72 +1,77 @@
 provider "op" {}
 
-data "op_vault" "test" {
-  name = "Semple"
-}
-
-resource "op_vault" "test2" {
-  name = "Test"
-}
-
-resource "op_vault" "import" {
+data "op_vault" "this" {
   name = "Personal"
-  users = []
 }
 
-resource "op_group" "this" {
-  name = "SomeGroup"
-  users = [
-      "email@here.com"
-  ]
+data "op_item_login" "666" {
+  name = "SomeLogin666"
+  vault = "${data.op_vault.this.id}"
 }
 
-resource "op_vault" "new" {
-  name = "New"
-}
+# resource "op_vault" "test2" {
+#   name = "Test"
+# }
 
-resource "op_item_login" "this" {
-  name     = "MyItem"
-  url      = "https://my.account.com"
+# resource "op_vault" "import" {
+#   name = "Personal"
+#   users = []
+# }
 
-  username = "USERNAME"
-  password = "PASSWORD"
+# resource "op_group" "this" {
+#   name = "SomeGroup"
+#   users = [
+#       "email@here.com"
+#   ]
+# }
 
-  section = {
-    title = "first"
+# resource "op_vault" "new" {
+#   name = "New"
+# }
 
-    field = {
-      type = "URL"
-      title = "Main Website"
-      value = "http://example.com"
-    }
+# resource "op_item_login" "this" {
+#   name     = "MyItem"
+#   url      = "https://my.account.com"
 
-    field = {
-      type = "address"
-      title = "Address"
-      value = {
-          street = "",
-          region = "",
-          country = "ua",
-          zipcode = "02160"
-      }
-    }
-  }
+#   username = "USERNAME"
+#   password = "PASSWORD"
 
-  section = {
-    title = "second"
+#   section = {
+#     title = "first"
 
-    field = {
-      type = "concealed"
-      title = "Password"
-      value = "it's sensetive data"
-    }
-  }
+#     field = {
+#       type = "URL"
+#       title = "Main Website"
+#       value = "http://example.com"
+#     }
 
-  vault = "${op_vault.new}"
+#     field = {
+#       type = "address"
+#       title = "Address"
+#       value = {
+#           street = "",
+#           region = "",
+#           country = "ua",
+#           zipcode = "02160"
+#       }
+#     }
+#   }
 
-  tags = [
-    "some",
-    "my",
-    "tags",
-  ]
-}
+#   section = {
+#     title = "second"
+
+#     field = {
+#       type = "concealed"
+#       title = "Password"
+#       value = "it's sensetive data"
+#     }
+#   }
+
+#   vault = "${op_vault.new}"
+
+#   tags = [
+#     "some",
+#     "my",
+#     "tags",
+#   ]
+# }

@@ -36,6 +36,5 @@ func (o *OnePassClient) CreateGroup(v *Group) (error, *Group) {
 }
 
 func (o *OnePassClient) DeleteGroup(id string) error {
-	err, _ := o.runCmd(ONE_PASSWORD_COMMAND_DELETE, GROUP_RESOURCE, id)
-	return err
+	return o.Delete(GROUP_RESOURCE, id)
 }
