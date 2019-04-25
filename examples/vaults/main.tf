@@ -8,70 +8,89 @@ data "op_item_login" "666" {
   name = "SomeLogin666"
   vault = "${data.op_vault.this.id}"
 }
+data "op_item_login" "999" {
+  name = "SomeLogin999"
+  vault = "${data.op_vault.this.id}"
+}
 
-# resource "op_vault" "test2" {
-#   name = "Test"
-# }
+data "op_item_login" "777" {
+  name = "SomeLogin777"
+  vault = "${data.op_vault.this.id}"
+}
 
-# resource "op_vault" "import" {
-#   name = "Personal"
-#   users = []
-# }
+resource "random_string" "secret" {
+  length = "32"
+}
 
-# resource "op_group" "this" {
-#   name = "SomeGroup"
-#   users = [
-#       "email@here.com"
-#   ]
-# }
+resource "op_item_login" "888" {
+  name = "New_888"
+  vault = "${data.op_vault.this.id}"
+  username = "admin"
+  password = "${random_string.secret.result}"
+  url = "https://whoma.ai"
+  tags = [
+    "this",
+    "is",
+    "Tagssssss",
+  ]
+  notes = "**Some** _awesome_ ~Markdown~"
+  section = {
+    name = "First Section"
 
-# resource "op_vault" "new" {
-#   name = "New"
-# }
+    field = {
+      name = "Address"
+      address = {
+        city = "New York"
+        zip = "01001"
+        country = "us"
+        street = "Manheten"
+        region = "Central Park"
+        state = "NY"
+      }
+    }
 
-# resource "op_item_login" "this" {
-#   name     = "MyItem"
-#   url      = "https://my.account.com"
+    field = {
+      name = "Text"
+      string = "text value"
+    }
 
-#   username = "USERNAME"
-#   password = "PASSWORD"
+    field = {
+      name = "password"
+      concealed = "concealed"
+    }
 
-#   section = {
-#     title = "first"
+    field = {
+      name = "Website Url"
+      url = "https://google.com"
+    }
+  }
 
-#     field = {
-#       type = "URL"
-#       title = "Main Website"
-#       value = "http://example.com"
-#     }
+  section = {
+    name = "Second Section"
 
-#     field = {
-#       type = "address"
-#       title = "Address"
-#       value = {
-#           street = "",
-#           region = "",
-#           country = "ua",
-#           zipcode = "02160"
-#       }
-#     }
-#   }
+    field = {
+      name = "Email address"
+      email = "andr@kapitan.dev"
+    }
 
-#   section = {
-#     title = "second"
+    field = {
+      name = "Telephone"
+      phone = "+38 (111) 111 1111"
+    }
 
-#     field = {
-#       type = "concealed"
-#       title = "Password"
-#       value = "it's sensetive data"
-#     }
-#   }
+    field = {
+      name = "Current Date"
+      date = 1556190244
+    }
 
-#   vault = "${op_vault.new}"
+    field = {
+      name = "Next Month and Year"
+      month_year = 201905
+    }
 
-#   tags = [
-#     "some",
-#     "my",
-#     "tags",
-#   ]
-# }
+    field = {
+      name = "2FA"
+      totp = "otpauth://totp/label?secret=super-2fa-secret\u0026issuer=AWS"
+    }
+  }
+}

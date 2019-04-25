@@ -11,8 +11,8 @@ func resourceVault() *schema.Resource {
 		Delete: resourceVaultDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				resourceVaultRead(d, meta)
-				return []*schema.ResourceData{d}, nil
+				err := resourceVaultRead(d, meta)
+				return []*schema.ResourceData{d}, err
 			},
 		},
 		Schema: map[string]*schema.Schema{

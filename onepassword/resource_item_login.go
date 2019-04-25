@@ -1,9 +1,12 @@
 package onepassword
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
+	"fmt"
 	"log"
+	"reflect"
 	"strings"
+	"crypto/rand"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceItemLogin() *schema.Resource {
@@ -132,10 +135,102 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	return d.Set("section", sections)
 }
 
+func fieldNumber() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return strings.ToUpper(fmt.Sprintf("%x", b))
+}
+
 func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
+	sections := []Section{}
+	for _, section := range d.Get("section").([]interface{}) {
+		fields := []SectionField{}
+		s := section.(map[string]interface{})
+		for _, field := range s["field"].([]interface{}) {
+			fl := field.(map[string]interface{})
+			f := SectionField{
+				Text: fl["name"].(string),
+			}
+			for key, val := range fl {
+				if key == "name" {
+					continue
+				}
+
+				isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
+				isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
+				isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
+
+				if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
+					f.N = fieldNumber()
+					f.Value = val
+					switch key {
+					case "totp":
+						f.Type = TypeConcealed
+						f.N = "TOTP_" + f.N
+					case "month_year":
+						f.Type = TypeMonthYear
+					case "url":
+						f.Type = TypeURL
+					default:
+						f.Type = SectionFieldType(key)
+					}
+				}
+
+			}
+			fields = append(fields, f)
+		}
+		sections = append(sections, Section{
+			Title:  s["name"].(string),
+			Fields: fields,
+		})
+	}
+
+	tSrc := d.Get("tags").([]interface{})
+	tags := make([]string, 0, len(tSrc))
+	for _, tag := range tSrc {
+		tags = append(tags, tag.(string))
+	}
+
+	item := &Item{
+		Uuid:  d.Id(),
+		Vault: d.Get("vault").(string),
+		Overview: Overview{
+			Title: d.Get("name").(string),
+			Url:   d.Get("url").(string),
+			Tags:  tags,
+		},
+		Details: Details{
+			Notes: d.Get("notes").(string),
+			Fields: []Field{
+				Field{
+					Name:        "username",
+					Designation: "username",
+					Value:       d.Get("username").(string),
+					Type:        FieldText,
+				},
+				Field{
+					Name:        "password",
+					Designation: "password",
+					Value:       d.Get("password").(string),
+					Type:        FieldPassword,
+				},
+			},
+			Sections: sections,
+		},
+	}
+	m := meta.(*Meta)
+	err, _ := m.onePassClient.CreateItem(item, "Login")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func resourceItemLoginDelete(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	m := meta.(*Meta)
+	err := m.onePassClient.DeleteItem(getId(d))
+	if err == nil {
+		d.SetId("")
+	}
+	return err
 }

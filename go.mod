@@ -14,6 +14,7 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.11.10
 	github.com/hashicorp/vault v1.1.2 // indirect
+	github.com/kalaspuffar/base64url v0.0.0-20171121144659-483af17b794c
 	github.com/keybase/go-crypto v0.0.0-20190416182011-b785b22cc757 // indirect
 	github.com/mitchellh/cli v1.0.0 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect

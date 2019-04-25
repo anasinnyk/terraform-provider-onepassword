@@ -102,6 +102,8 @@ github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 h1:12VvqtR6Ao
 github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
+github.com/kalaspuffar/base64url v0.0.0-20171121144659-483af17b794c h1:ZkUizoGcMSTBf//ceQsABr48qCn5jKDbcJzl/tF0rTE=
+github.com/kalaspuffar/base64url v0.0.0-20171121144659-483af17b794c/go.mod h1:TB01veSUodJmp2SAYhLtMRGSfQnbx0PSoCsIpY4Tp6I=
 github.com/keybase/go-crypto v0.0.0-20190416182011-b785b22cc757 h1:rHXu79NFmin5AvIe4JsnfCBGb1qAIlMTX0vnpVnDn7s=
 github.com/keybase/go-crypto v0.0.0-20190416182011-b785b22cc757/go.mod h1:ghbZscTyKdM07+Fw3KSi0hcJm+AlEUWj8QLlPtijN/M=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
