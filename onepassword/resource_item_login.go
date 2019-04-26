@@ -1,12 +1,9 @@
 package onepassword
 
 import (
-	"fmt"
-	"log"
-	"reflect"
-	"strings"
-	"crypto/rand"
+	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
+	"log"
 )
 
 func resourceItemLogin() *schema.Resource {
@@ -85,6 +82,9 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+	if v.Template != Category2Template(LoginCategory) {
+		return errors.New("Item is not from " + string(LoginCategory))
+	}
 
 	d.SetId(v.Uuid)
 	d.Set("name", v.Overview.Title)
@@ -102,102 +102,18 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 			d.Set("password", field.Value)
 		}
 	}
-	sections := make([]map[string]interface{}, 0, len(v.Details.Sections))
-	for _, section := range v.Details.Sections {
-		fields := make([]map[string]interface{}, 0, len(section.Fields))
-		for _, field := range section.Fields {
-			f := map[string]interface{}{
-				"name": field.Text,
-			}
-			var key string
-			switch field.Type {
-			case TypeURL:
-				key = "url"
-			case TypeMonthYear:
-				key = "month_year"
-			case TypeConcealed:
-				if strings.HasPrefix(field.N, "TOTP_") {
-					key = "totp"
-				} else {
-					key = "concealed"
-				}
-			default:
-				key = string(field.Type)
-			}
-			f[key] = field.Value
-			fields = append(fields, f)
-		}
-		sections = append(sections, map[string]interface{}{
-			"name":  section.Title,
-			"field": fields,
-		})
-	}
-	return d.Set("section", sections)
-}
-
-func fieldNumber() string {
-	b := make([]byte, 16)
-	rand.Read(b)
-	return strings.ToUpper(fmt.Sprintf("%x", b))
+	return d.Set("section", v.ProcessSections())
 }
 
 func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
-	sections := []Section{}
-	for _, section := range d.Get("section").([]interface{}) {
-		fields := []SectionField{}
-		s := section.(map[string]interface{})
-		for _, field := range s["field"].([]interface{}) {
-			fl := field.(map[string]interface{})
-			f := SectionField{
-				Text: fl["name"].(string),
-			}
-			for key, val := range fl {
-				if key == "name" {
-					continue
-				}
-
-				isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
-				isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
-				isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
-
-				if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
-					f.N = fieldNumber()
-					f.Value = val
-					switch key {
-					case "totp":
-						f.Type = TypeConcealed
-						f.N = "TOTP_" + f.N
-					case "month_year":
-						f.Type = TypeMonthYear
-					case "url":
-						f.Type = TypeURL
-					default:
-						f.Type = SectionFieldType(key)
-					}
-				}
-
-			}
-			fields = append(fields, f)
-		}
-		sections = append(sections, Section{
-			Title:  s["name"].(string),
-			Fields: fields,
-		})
-	}
-
-	tSrc := d.Get("tags").([]interface{})
-	tags := make([]string, 0, len(tSrc))
-	for _, tag := range tSrc {
-		tags = append(tags, tag.(string))
-	}
-
 	item := &Item{
-		Uuid:  d.Id(),
-		Vault: d.Get("vault").(string),
+		Uuid:     d.Id(),
+		Vault:    d.Get("vault").(string),
+		Template: Category2Template(LoginCategory),
 		Overview: Overview{
 			Title: d.Get("name").(string),
 			Url:   d.Get("url").(string),
-			Tags:  tags,
+			Tags:  ParseTags(d),
 		},
 		Details: Details{
 			Notes: d.Get("notes").(string),
@@ -215,11 +131,11 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 					Type:        FieldPassword,
 				},
 			},
-			Sections: sections,
+			Sections: ParseSections(d),
 		},
 	}
 	m := meta.(*Meta)
-	err, _ := m.onePassClient.CreateItem(item, "Login")
+	err, _ := m.onePassClient.CreateItem(item)
 	if err != nil {
 		return err
 	}

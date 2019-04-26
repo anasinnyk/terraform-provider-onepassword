@@ -13,11 +13,27 @@ data "op_item_login" "999" {
   vault = "${data.op_vault.this.id}"
 }
 
-data "op_item_login" "777" {
-  name = "SomeLogin777"
+data "op_item_document" "this" {
+  name = "Test TXT"
   vault = "${data.op_vault.this.id}"
 }
 
+output "doc_name" {
+  value = "${data.op_item_document.this.file_name}"
+}
+output "doc_content" {
+  value = "${data.op_item_document.this.content}"
+}
+
+resource "op_item_document" "this3" {
+  name = "Some doc"
+  tags = [
+    "tag for doc",
+    "system",
+  ]
+  vault = "${data.op_vault.this.id}"
+  file_path = "./test.txt" 
+}
 resource "random_string" "secret" {
   length = "32"
 }

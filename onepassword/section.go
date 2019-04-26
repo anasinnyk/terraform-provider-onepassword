@@ -2,6 +2,9 @@ package onepassword
 
 import (
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
+	"reflect"
+	"strings"
 )
 
 var sectionSchema = &schema.Resource{
@@ -39,6 +42,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"url": {
@@ -56,6 +62,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"phone": {
@@ -72,6 +81,68 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
+						},
+					},
+					"reference": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "Item login section field value for reference.",
+						ConflictsWith: []string{
+							"section.field.string",
+							"section.field.url",
+							"section.field.phone",
+							"section.field.email",
+							"section.field.date",
+							"section.field.month_year",
+							"section.field.totp",
+							"section.field.concealed",
+							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+						},
+					},
+					"sex": {
+						Type:         schema.TypeString,
+						Computed:     true,
+						Optional:     true,
+						ValidateFunc: orEmpty(validation.StringInSlice([]string{"female", "male"}, false)),
+						Description:  "Item login section field value for sex.",
+						ConflictsWith: []string{
+							"section.field.string",
+							"section.field.phone",
+							"section.field.url",
+							"section.field.email",
+							"section.field.date",
+							"section.field.month_year",
+							"section.field.totp",
+							"section.field.concealed",
+							"section.field.address",
+							"section.field.card_type",
+							"section.field.reference",
+						},
+					},
+					"card_type": {
+						Type:         schema.TypeString,
+						Computed:     true,
+						Optional:     true,
+						Description:  "Item login section field value for card type.",
+						ValidateFunc: orEmpty(validation.StringInSlice([]string{"mc", "visa", "amex", "diners", "carteblanche", "discover", "jcb", "maestro", "visaelectron", "laser", "unionpay"}, false)),
+						ConflictsWith: []string{
+							"section.field.string",
+							"section.field.phone",
+							"section.field.url",
+							"section.field.email",
+							"section.field.date",
+							"section.field.month_year",
+							"section.field.totp",
+							"section.field.concealed",
+							"section.field.address",
+							"section.field.sex",
+							"section.field.reference",
 						},
 					},
 					"email": {
@@ -89,6 +160,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"date": {
@@ -106,6 +180,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"month_year": {
@@ -123,6 +200,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.totp",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"totp": {
@@ -141,6 +221,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.month_year",
 							"section.field.concealed",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"concealed": {
@@ -158,6 +241,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.month_year",
 							"section.field.totp",
 							"section.field.address",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 					},
 					"address": {
@@ -174,6 +260,9 @@ var sectionSchema = &schema.Resource{
 							"section.field.month_year",
 							"section.field.totp",
 							"section.field.concealed",
+							"section.field.sex",
+							"section.field.card_type",
+							"section.field.reference",
 						},
 						Elem: &schema.Resource{
 							Schema: map[string]*schema.Schema{
@@ -220,4 +309,63 @@ var sectionSchema = &schema.Resource{
 			},
 		},
 	},
+}
+
+func ParseTags(d *schema.ResourceData) []string {
+	tSrc := d.Get("tags").([]interface{})
+	tags := make([]string, 0, len(tSrc))
+	for _, tag := range tSrc {
+		tags = append(tags, tag.(string))
+	}
+	return tags
+}
+
+func ParseSections(d *schema.ResourceData) []Section {
+	sections := []Section{}
+	for _, section := range d.Get("section").([]interface{}) {
+		fields := []SectionField{}
+		s := section.(map[string]interface{})
+		for _, field := range s["field"].([]interface{}) {
+			fl := field.(map[string]interface{})
+			f := SectionField{
+				Text: fl["name"].(string),
+			}
+			for key, val := range fl {
+				if key == "name" {
+					continue
+				}
+
+				isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
+				isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
+				isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
+
+				if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
+					f.N = fieldNumber()
+					f.Value = val
+					switch key {
+					case "sex":
+						f.Type = TypeSex
+					case "totp":
+						f.Type = TypeConcealed
+						f.N = "TOTP_" + f.N
+					case "month_year":
+						f.Type = TypeMonthYear
+					case "url":
+						f.Type = TypeURL
+					case "card_type":
+						f.Type = TypeCard
+					default:
+						f.Type = SectionFieldType(key)
+					}
+				}
+
+			}
+			fields = append(fields, f)
+		}
+		sections = append(sections, Section{
+			Title:  s["name"].(string),
+			Fields: fields,
+		})
+	}
+	return sections
 }

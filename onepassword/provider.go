@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os/exec"
 	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"os/exec"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -57,14 +57,16 @@ func Provider() terraform.ResourceProvider {
 			// "op_item_bank_account": resourceItemBankAccount(),
 			// "op_item_identity":    resourceItemIdentity(),
 			// "op_item_credit_card": resourceItemCreditCard(),
-			"op_item_login": resourceItemLogin(),
-			"op_vault":      resourceVault(),
-			"op_group":      resourceGroup(),
+			"op_item_document": resourceItemDocument(),
+			"op_item_login":    resourceItemLogin(),
+			"op_vault":         resourceVault(),
+			"op_group":         resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"op_item_login": dataSourceItemLogin(),
-			"op_vault":      dataSourceVault(),
-			"op_group":      dataSourceGroup(),
+			"op_item_document": dataSourceItemDocument(),
+			"op_item_login":    dataSourceItemLogin(),
+			"op_vault":         dataSourceVault(),
+			"op_group":         dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

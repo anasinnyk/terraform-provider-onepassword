@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform/plugin"
 	"github.com/anasinnyk/terraform-provider-1password/onepassword"
+	"github.com/hashicorp/terraform/plugin"
 )
 
 func main() {

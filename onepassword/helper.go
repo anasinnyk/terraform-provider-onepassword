@@ -1,9 +1,12 @@
 package onepassword
 
 import (
+	"crypto/rand"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
 	"net/url"
 	"regexp"
+	"strings"
 )
 
 func emailValidate(i interface{}, k string) (s []string, es []error) {
@@ -32,4 +35,20 @@ func urlValidate(i interface{}, k string) (s []string, es []error) {
 		return
 	}
 	return
+}
+
+func orEmpty(f schema.SchemaValidateFunc) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) ([]string, []error) {
+		v, ok := i.(string)
+		if ok && v == "" {
+			return nil, nil
+		}
+		return f(i, k)
+	}
+}
+
+func fieldNumber() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return strings.ToUpper(fmt.Sprintf("%x", b))
 }
