@@ -364,6 +364,7 @@ func ParseSections(d *schema.ResourceData) []Section {
 		}
 		sections = append(sections, Section{
 			Title:  s["name"].(string),
+			Name:   "Section_" + fieldNumber(),
 			Fields: fields,
 		})
 	}

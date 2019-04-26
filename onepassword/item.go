@@ -75,17 +75,18 @@ type Item struct {
 }
 
 type DocumentAttributes struct {
-	FileName string `json:"fileName"`
+	FileName string `json:"fileName,omitempty"`
 }
 
 type Details struct {
-	DocumentAttributes DocumentAttributes `json:"documentAttributes"`
+	DocumentAttributes DocumentAttributes `json:"documentAttributes,omitempty"`
 	Notes              string             `json:"notesPlain"`
 	Fields             []Field            `json:"fields"`
 	Sections           []Section          `json:"sections"`
 }
 
 type Section struct {
+	Name   string         `json:"name"`
 	Title  string         `json:"title"`
 	Fields []SectionField `json:"fields"`
 }
@@ -118,12 +119,16 @@ type Overview struct {
 
 func (o *OnePassClient) ReadItem(id string, vaultId string) (error, *Item) {
 	item := &Item{}
-	err, res := o.runCmd(
+	args := []string{
 		ONE_PASSWORD_COMMAND_GET,
 		ITEM_RESOURCE,
 		id,
-		fmt.Sprintf("--vault=%s", vaultId),
-	)
+	}
+
+	if vaultId != "" {
+		args = append(args, fmt.Sprintf("--vault=%s", vaultId))
+	}
+	err, res := o.runCmd(args...)
 	if err != nil {
 		return err, nil
 	}
@@ -219,32 +224,38 @@ func Template2Category(t string) Category {
 	}
 }
 
-func (o *OnePassClient) CreateItem(v *Item) (error, *Item) {
+func (o *OnePassClient) CreateItem(v *Item) error {
 	details, err := json.Marshal(v.Details)
 	if err != nil {
-		return err, nil
+		return err
 	}
 	log.Printf("[DEBUG] Store Items - %s", details)
 	detailsHash := base64url.Encode([]byte(details))
 	template := Template2Category(v.Template)
 	if template == UnknownCategory {
-		return errors.New("Unknown template id " + v.Template), nil
+		return errors.New("Unknown template id " + v.Template)
 	}
 
-	err, _ = o.runCmd(
+	args := []string{
 		ONE_PASSWORD_COMMAND_CREATE,
 		ITEM_RESOURCE,
 		string(template),
 		detailsHash,
-		fmt.Sprintf("--vault=%s", v.Vault),
 		fmt.Sprintf("--title=%s", v.Overview.Title),
 		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
-	)
-
-	if err != nil {
-		return err, nil
 	}
-	return nil, v
+
+	if v.Vault != "" {
+		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
+	}
+	err, res := o.runCmd(args...)
+	if err == nil {
+		err, id := getResultId(res)
+		if err == nil {
+			v.Uuid = id
+		}
+	}
+	return err
 }
 
 func (o *OnePassClient) ReadDocument(id string) (error, string) {
@@ -256,16 +267,27 @@ func (o *OnePassClient) ReadDocument(id string) (error, string) {
 	return err, string(content)
 }
 
-func (o *OnePassClient) CreateDocument(v *Item, filePath string) (error, *Item) {
-	err, _ := o.runCmd(
+func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
+	args := []string{
 		ONE_PASSWORD_COMMAND_CREATE,
 		DOCUMENT_RESOURCE,
 		filePath,
-		fmt.Sprintf("--vault=%s", v.Vault),
 		fmt.Sprintf("--title=%s", v.Overview.Title),
 		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
-	)
-	return err, v
+	}
+
+	if v.Vault != "" {
+		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
+	}
+
+	err, res := o.runCmd(args...)
+	if err == nil {
+		err, id := getResultId(res)
+		if err == nil {
+			v.Uuid = id
+		}
+	}
+	return err
 }
 
 func (o *OnePassClient) DeleteItem(id string) error {

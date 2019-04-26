@@ -1,6 +1,7 @@
 package onepassword
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -53,20 +54,21 @@ func Provider() terraform.ResourceProvider {
 			// "op_item_email_account": resourceItemEmailAccount(),
 			// "op_item_driver_license": resourceItemDriverLicense(),
 			// "op_item_database": resourceItemDatabase(),
-			// "op_item_secure_note": resourceItemSecureNote(),
 			// "op_item_bank_account": resourceItemBankAccount(),
 			// "op_item_identity":    resourceItemIdentity(),
 			// "op_item_credit_card": resourceItemCreditCard(),
-			"op_item_document": resourceItemDocument(),
-			"op_item_login":    resourceItemLogin(),
-			"op_vault":         resourceVault(),
-			"op_group":         resourceGroup(),
+			"op_item_secure_note": resourceItemSecureNote(),
+			"op_item_document":    resourceItemDocument(),
+			"op_item_login":       resourceItemLogin(),
+			"op_vault":            resourceVault(),
+			"op_group":            resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"op_item_document": dataSourceItemDocument(),
-			"op_item_login":    dataSourceItemLogin(),
-			"op_vault":         dataSourceVault(),
-			"op_group":         dataSourceGroup(),
+			"op_item_secure_note": dataSourceItemSecureNote(),
+			"op_item_document":    dataSourceItemDocument(),
+			"op_item_login":       dataSourceItemLogin(),
+			"op_vault":            dataSourceVault(),
+			"op_group":            dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -153,6 +155,18 @@ func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 		err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args, err, res)
 	}
 	return err, res
+}
+
+func getResultId(r []byte) (error, string) {
+	result := &Resource{}
+	if err := json.Unmarshal(r, result); err != nil {
+		return err, ""
+	}
+	return nil, result.Uuid
+}
+
+type Resource struct {
+	Uuid string `json:"uuid"`
 }
 
 func getId(d *schema.ResourceData) string {

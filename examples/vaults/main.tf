@@ -38,8 +38,39 @@ resource "random_string" "secret" {
   length = "32"
 }
 
-resource "op_item_login" "888" {
-  name = "New_888"
+data "op_item_secure_note" "this" {
+  name = "RelatedNote"
+}
+
+resource "op_item_secure_note" "sn" {
+  name = "New Secure Note"
+  notes = "${random_string.secret.result}"
+  tags = [
+    "this",
+    "is",
+    "Tagssssss",
+  ]
+  vault = "${data.op_vault.this.id}" 
+  
+  section = {
+    name = "First Section"
+
+    field = {
+      name = "Address"
+      address = {
+        city = "New York"
+        zip = "01001"
+        country = "us"
+        street = "Manheten"
+        region = "Central Park"
+        state = "NY"
+      }
+    }
+  }
+}
+
+resource "op_item_login" "8888888" {
+  name = "New_888_88888"
   vault = "${data.op_vault.this.id}"
   username = "admin"
   password = "${random_string.secret.result}"

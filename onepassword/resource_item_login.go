@@ -107,7 +107,6 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 	item := &Item{
-		Uuid:     d.Id(),
 		Vault:    d.Get("vault").(string),
 		Template: Category2Template(LoginCategory),
 		Overview: Overview{
@@ -135,10 +134,11 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 		},
 	}
 	m := meta.(*Meta)
-	err, _ := m.onePassClient.CreateItem(item)
+	err := m.onePassClient.CreateItem(item)
 	if err != nil {
 		return err
 	}
+	d.SetId(item.Uuid)
 	return nil
 }
 
