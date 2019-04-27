@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 	"log"
-    "sync"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -149,6 +149,7 @@ func (o *OnePassClient) SignIn() error {
 }
 
 var m sync.Mutex
+
 func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	args = append(args, fmt.Sprintf("--session=%s", o.Session))
 	m.Lock()

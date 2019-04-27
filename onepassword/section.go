@@ -12,12 +12,14 @@ var sectionSchema = &schema.Resource{
 		"name": {
 			Type:        schema.TypeString,
 			Computed:    true,
+			ForceNew:    true,
 			Optional:    true,
 			Description: "Item login section name.",
 		},
 		"field": {
 			Type:        schema.TypeList,
 			Computed:    true,
+			ForceNew:    true,
 			Optional:    true,
 			Description: "Item login section field.",
 			Elem: &schema.Resource{
@@ -25,6 +27,7 @@ var sectionSchema = &schema.Resource{
 					"name": {
 						Type:        schema.TypeString,
 						Computed:    true,
+						ForceNew:    true,
 						Optional:    true,
 						Description: "Item login section field name.",
 					},
@@ -32,6 +35,7 @@ var sectionSchema = &schema.Resource{
 						Type:        schema.TypeString,
 						Computed:    true,
 						Optional:    true,
+						ForceNew:    true,
 						Description: "Item login section field value for string.",
 						ConflictsWith: []string{
 							"section.field.url",
@@ -51,6 +55,7 @@ var sectionSchema = &schema.Resource{
 						Type:         schema.TypeString,
 						Computed:     true,
 						Optional:     true,
+						ForceNew:     true,
 						ValidateFunc: urlValidate,
 						Description:  "Item login section field value for url.",
 						ConflictsWith: []string{
@@ -70,6 +75,7 @@ var sectionSchema = &schema.Resource{
 					"phone": {
 						Type:        schema.TypeString,
 						Computed:    true,
+						ForceNew:    true,
 						Optional:    true,
 						Description: "Item login section field value for phone.",
 						ConflictsWith: []string{
@@ -89,6 +95,7 @@ var sectionSchema = &schema.Resource{
 					"reference": {
 						Type:        schema.TypeString,
 						Computed:    true,
+						ForceNew:    true,
 						Optional:    true,
 						Description: "Item login section field value for reference.",
 						ConflictsWith: []string{
@@ -108,6 +115,7 @@ var sectionSchema = &schema.Resource{
 					"sex": {
 						Type:         schema.TypeString,
 						Computed:     true,
+						ForceNew:     true,
 						Optional:     true,
 						ValidateFunc: orEmpty(validation.StringInSlice([]string{"female", "male"}, false)),
 						Description:  "Item login section field value for sex.",
@@ -129,6 +137,7 @@ var sectionSchema = &schema.Resource{
 						Type:         schema.TypeString,
 						Computed:     true,
 						Optional:     true,
+						ForceNew:     true,
 						Description:  "Item login section field value for card type.",
 						ValidateFunc: orEmpty(validation.StringInSlice([]string{"mc", "visa", "amex", "diners", "carteblanche", "discover", "jcb", "maestro", "visaelectron", "laser", "unionpay"}, false)),
 						ConflictsWith: []string{
@@ -149,6 +158,7 @@ var sectionSchema = &schema.Resource{
 						Type:         schema.TypeString,
 						Computed:     true,
 						Optional:     true,
+						ForceNew:     true,
 						ValidateFunc: emailValidate,
 						Description:  "Item login section field value for email.",
 						ConflictsWith: []string{
@@ -169,6 +179,7 @@ var sectionSchema = &schema.Resource{
 						Type:     schema.TypeInt,
 						Computed: true,
 						Optional: true,
+						ForceNew: true,
 						// ValidateFunc: dateValidate,
 						Description: "Item login section field value for date.",
 						ConflictsWith: []string{
@@ -189,6 +200,7 @@ var sectionSchema = &schema.Resource{
 						Type:     schema.TypeInt,
 						Computed: true,
 						Optional: true,
+						ForceNew: true,
 						// ValidateFunc: monthYearValidate,
 						Description: "Item login section field value for month year.",
 						ConflictsWith: []string{
@@ -210,6 +222,7 @@ var sectionSchema = &schema.Resource{
 						Computed:  true,
 						Optional:  true,
 						Sensitive: true,
+						ForceNew:  true,
 						// ValidateFunc: totpValidate,
 						Description: "Item login section field value for totp.",
 						ConflictsWith: []string{
@@ -231,6 +244,7 @@ var sectionSchema = &schema.Resource{
 						Computed:    true,
 						Optional:    true,
 						Sensitive:   true,
+						ForceNew:    true,
 						Description: "Item login section field value for password.",
 						ConflictsWith: []string{
 							"section.field.string",
@@ -250,6 +264,7 @@ var sectionSchema = &schema.Resource{
 						Type:        schema.TypeMap,
 						Computed:    true,
 						Optional:    true,
+						ForceNew:    true,
 						Description: "Item login section field value for address.",
 						ConflictsWith: []string{
 							"section.field.string",
@@ -270,36 +285,42 @@ var sectionSchema = &schema.Resource{
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - country.",
 								},
 								"city": {
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - city.",
 								},
 								"region": {
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - region.",
 								},
 								"state": {
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - state.",
 								},
 								"street": {
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - street.",
 								},
 								"zip": {
 									Type:        schema.TypeString,
 									Computed:    true,
 									Optional:    true,
+									ForceNew:    true,
 									Description: "Item login section field value for address - zip.",
 								},
 							},

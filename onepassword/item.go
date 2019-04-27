@@ -242,6 +242,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 		string(template),
 		detailsHash,
 		fmt.Sprintf("--title=%s", v.Overview.Title),
+		fmt.Sprintf("--url=%s", v.Overview.Url),
 		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
 	}
 
