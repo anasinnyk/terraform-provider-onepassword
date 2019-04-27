@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+    "sync"
 	"regexp"
 	"strings"
 
@@ -147,9 +148,12 @@ func (o *OnePassClient) SignIn() error {
 	return nil
 }
 
+var m sync.Mutex
 func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	args = append(args, fmt.Sprintf("--session=%s", o.Session))
+	m.Lock()
 	cmd := exec.Command(o.PathToOp, args...)
+	defer m.Unlock()
 	res, err := cmd.CombinedOutput()
 	if err != nil {
 		err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args, err, res)
