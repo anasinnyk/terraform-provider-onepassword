@@ -1,9 +1,9 @@
 package onepassword
 
 import (
-	"log"
 	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
+	"log"
 )
 
 func resourceItemDocument() *schema.Resource {
@@ -19,35 +19,35 @@ func resourceItemDocument() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				ForceNew:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
 			},
 			"tags": {
-				Type:        schema.TypeList,
-				Optional:    true,
-				ForceNew:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"vault": {
-				Type:        schema.TypeString,
-				ForceNew:    true,
-				Optional:    true,
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
 			},
 			"file_path": {
-				Type:        schema.TypeString,
-				ForceNew:    true,
-				Required:    true,
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Required: true,
 			},
 			"file_name": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
 			},
 			"content": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
 			},
 		},
 	}
@@ -69,7 +69,6 @@ func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", v.Overview.Title)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
-	d.Set("file_name", v.Details.DocumentAttributes.FileName)
 
 	if err, content := m.onePassClient.ReadDocument(v.Uuid); err != nil {
 		return err

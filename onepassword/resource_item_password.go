@@ -6,24 +6,19 @@ import (
 	"log"
 )
 
-func resourceItemLogin() *schema.Resource {
+func resourceItemPassword() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemLoginRead,
-		Create: resourceItemLoginCreate,
+		Read:   resourceItemPasswordRead,
+		Create: resourceItemPasswordCreate,
 		Delete: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemLoginRead(d, meta)
+				err := resourceItemPasswordRead(d, meta)
 				return []*schema.ResourceData{d}, err
 			},
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-			"username": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -66,7 +61,7 @@ func resourceItemLogin() *schema.Resource {
 	}
 }
 
-func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemPasswordRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
 	vaultId := d.Get("vault").(string)
 	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
@@ -74,8 +69,8 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	if v.Template != Category2Template(LoginCategory) {
-		return errors.New("Item is not from " + string(LoginCategory))
+	if v.Template != Category2Template(PasswordCategory) {
+		return errors.New("Item is not from " + string(PasswordCategory))
 	}
 
 	d.SetId(v.Uuid)
@@ -86,42 +81,22 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("notes", v.Details.Notes)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
-	for _, field := range v.Details.Fields {
-		if field.Name == "username" {
-			d.Set("username", field.Value)
-		}
-		if field.Name == "password" {
-			d.Set("password", field.Value)
-		}
-	}
+	d.Set("password", v.Details.Password)
 	return d.Set("section", v.ProcessSections())
 }
 
-func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemPasswordCreate(d *schema.ResourceData, meta interface{}) error {
 	item := &Item{
 		Vault:    d.Get("vault").(string),
-		Template: Category2Template(LoginCategory),
+		Template: Category2Template(PasswordCategory),
 		Overview: Overview{
 			Title: d.Get("name").(string),
 			Url:   d.Get("url").(string),
 			Tags:  ParseTags(d),
 		},
 		Details: Details{
-			Notes: d.Get("notes").(string),
-			Fields: []Field{
-				Field{
-					Name:        "username",
-					Designation: "username",
-					Value:       d.Get("username").(string),
-					Type:        FieldText,
-				},
-				Field{
-					Name:        "password",
-					Designation: "password",
-					Value:       d.Get("password").(string),
-					Type:        FieldPassword,
-				},
-			},
+			Notes:    d.Get("notes").(string),
+			Password: d.Get("password").(string),
 			Sections: ParseSections(d),
 		},
 	}

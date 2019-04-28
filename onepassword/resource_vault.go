@@ -17,9 +17,9 @@ func resourceVault() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:        schema.TypeString,
-				ForceNew:    true,
-				Required:    true,
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Required: true,
 			},
 		},
 	}

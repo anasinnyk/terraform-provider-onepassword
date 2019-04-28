@@ -18,9 +18,6 @@ data "op_item_document" "this" {
   vault = "${data.op_vault.this.id}"
 }
 
-output "doc_name" {
-  value = "${data.op_item_document.this.file_name}"
-}
 output "doc_content" {
   value = "${data.op_item_document.this.content}"
 }
@@ -65,6 +62,27 @@ resource "op_item_secure_note" "sn" {
         region = "Central Park"
         state = "NY"
       }
+    }
+  }
+}
+
+resource "op_item_password" "8888888" {
+  name = "New_888_Password"
+  vault = "${data.op_vault.this.id}"
+  password = "${random_string.secret.result}"
+  url = "https://whoma.ai"
+  tags = [
+    "this",
+    "is",
+    "Tagssssss",
+  ]
+  notes = "**Some** _awesome_ ~Markdown~"
+  section = {
+    name = "First Section"
+
+    field = {
+      name = "Address"
+      string = "text"
     }
   }
 }

@@ -75,15 +75,11 @@ type Item struct {
 	Details  Details  `json:"details"`
 }
 
-type DocumentAttributes struct {
-	FileName string `json:"fileName,omitempty"`
-}
-
 type Details struct {
-	DocumentAttributes DocumentAttributes `json:"documentAttributes,omitempty"`
-	Notes              string             `json:"notesPlain"`
-	Fields             []Field            `json:"fields"`
-	Sections           []Section          `json:"sections"`
+	Notes    string    `json:"notesPlain"`
+	Password string    `json:"password"`
+	Fields   []Field   `json:"fields"`
+	Sections []Section `json:"sections"`
 }
 
 type Section struct {

@@ -10,25 +10,25 @@ import (
 var sectionSchema = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"name": {
-			Type:        schema.TypeString,
-			ForceNew:    true,
-			Optional:    true,
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Optional: true,
 		},
 		"field": {
-			Type:        schema.TypeList,
-			ForceNew:    true,
-			Optional:    true,
+			Type:     schema.TypeList,
+			ForceNew: true,
+			Optional: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"name": {
-						Type:        schema.TypeString,
-						ForceNew:    true,
-						Optional:    true,
+						Type:     schema.TypeString,
+						ForceNew: true,
+						Optional: true,
 					},
 					"string": {
-						Type:        schema.TypeString,
-						Optional:    true,
-						ForceNew:    true,
+						Type:     schema.TypeString,
+						Optional: true,
+						ForceNew: true,
 						ConflictsWith: []string{
 							"section.field.url",
 							"section.field.phone",
@@ -63,9 +63,9 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"phone": {
-						Type:        schema.TypeString,
-						ForceNew:    true,
-						Optional:    true,
+						Type:     schema.TypeString,
+						ForceNew: true,
+						Optional: true,
 						ConflictsWith: []string{
 							"section.field.string",
 							"section.field.url",
@@ -81,9 +81,9 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"reference": {
-						Type:        schema.TypeString,
-						ForceNew:    true,
-						Optional:    true,
+						Type:     schema.TypeString,
+						ForceNew: true,
+						Optional: true,
 						ConflictsWith: []string{
 							"section.field.string",
 							"section.field.url",
@@ -118,9 +118,9 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"card_type": {
-						Type:         schema.TypeString,
-						Optional:     true,
-						ForceNew:     true,
+						Type:     schema.TypeString,
+						Optional: true,
+						ForceNew: true,
 						ValidateFunc: orEmpty(validation.StringInSlice([]string{
 							"mc",
 							"visa",
@@ -132,8 +132,8 @@ var sectionSchema = &schema.Resource{
 							"maestro",
 							"visaelectron",
 							"laser",
-							"unionpay"
-							}, false)),
+							"unionpay",
+						}, false)),
 						ConflictsWith: []string{
 							"section.field.string",
 							"section.field.phone",
@@ -186,9 +186,9 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"month_year": {
-						Type:     schema.TypeInt,
-						Optional: true,
-						ForceNew: true,
+						Type:        schema.TypeInt,
+						Optional:    true,
+						ForceNew:    true,
 						Description: "Item login section field value for month year.",
 						ConflictsWith: []string{
 							"section.field.string",
@@ -224,10 +224,10 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"concealed": {
-						Type:        schema.TypeString,
-						Optional:    true,
-						Sensitive:   true,
-						ForceNew:    true,
+						Type:      schema.TypeString,
+						Optional:  true,
+						Sensitive: true,
+						ForceNew:  true,
 						ConflictsWith: []string{
 							"section.field.string",
 							"section.field.url",
@@ -243,9 +243,9 @@ var sectionSchema = &schema.Resource{
 						},
 					},
 					"address": {
-						Type:        schema.TypeMap,
-						Optional:    true,
-						ForceNew:    true,
+						Type:     schema.TypeMap,
+						Optional: true,
+						ForceNew: true,
 						ConflictsWith: []string{
 							"section.field.string",
 							"section.field.url",
@@ -262,34 +262,34 @@ var sectionSchema = &schema.Resource{
 						Elem: &schema.Resource{
 							Schema: map[string]*schema.Schema{
 								"country": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 								"city": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 								"region": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 								"state": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 								"street": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 								"zip": {
-									Type:        schema.TypeString,
-									Optional:    true,
-									ForceNew:    true,
+									Type:     schema.TypeString,
+									Optional: true,
+									ForceNew: true,
 								},
 							},
 						},
