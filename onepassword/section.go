@@ -341,52 +341,55 @@ func ParseTags(d *schema.ResourceData) []string {
 	return tags
 }
 
+func ParseFields(s map[string]interface{}) []SectionField {
+	fields := []SectionField{}
+	for _, field := range s["field"].([]interface{}) {
+		fl := field.(map[string]interface{})
+		f := SectionField{
+			Text: fl["name"].(string),
+		}
+		for key, val := range fl {
+			if key == "name" {
+				continue
+			}
+
+			isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
+			isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
+			isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
+
+			if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
+				f.N = fieldNumber()
+				f.Value = val
+				switch key {
+				case "sex":
+					f.Type = TypeSex
+				case "totp":
+					f.Type = TypeConcealed
+					f.N = "TOTP_" + f.N
+				case "month_year":
+					f.Type = TypeMonthYear
+				case "url":
+					f.Type = TypeURL
+				case "card_type":
+					f.Type = TypeCard
+				default:
+					f.Type = SectionFieldType(key)
+				}
+			}
+		}
+		fields = append(fields, f)
+	}
+	return fields
+}
+
 func ParseSections(d *schema.ResourceData) []Section {
 	sections := []Section{}
 	for _, section := range d.Get("section").([]interface{}) {
-		fields := []SectionField{}
 		s := section.(map[string]interface{})
-		for _, field := range s["field"].([]interface{}) {
-			fl := field.(map[string]interface{})
-			f := SectionField{
-				Text: fl["name"].(string),
-			}
-			for key, val := range fl {
-				if key == "name" {
-					continue
-				}
-
-				isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
-				isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
-				isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
-
-				if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
-					f.N = fieldNumber()
-					f.Value = val
-					switch key {
-					case "sex":
-						f.Type = TypeSex
-					case "totp":
-						f.Type = TypeConcealed
-						f.N = "TOTP_" + f.N
-					case "month_year":
-						f.Type = TypeMonthYear
-					case "url":
-						f.Type = TypeURL
-					case "card_type":
-						f.Type = TypeCard
-					default:
-						f.Type = SectionFieldType(key)
-					}
-				}
-
-			}
-			fields = append(fields, f)
-		}
 		sections = append(sections, Section{
 			Title:  s["name"].(string),
 			Name:   "Section_" + fieldNumber(),
-			Fields: fields,
+			Fields: ParseFields(s),
 		})
 	}
 	return sections

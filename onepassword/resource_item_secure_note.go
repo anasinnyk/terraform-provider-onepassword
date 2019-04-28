@@ -10,7 +10,7 @@ func resourceItemSecureNote() *schema.Resource {
 	return &schema.Resource{
 		Read:   resourceItemSecureNoteRead,
 		Create: resourceItemSecureNoteCreate,
-		Delete: resourceItemSecureNoteDelete,
+		Delete: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				err := resourceItemSecureNoteRead(d, meta)
@@ -99,13 +99,4 @@ func resourceItemSecureNoteCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 	d.SetId(item.Uuid)
 	return nil
-}
-
-func resourceItemSecureNoteDelete(d *schema.ResourceData, meta interface{}) error {
-	m := meta.(*Meta)
-	err := m.onePassClient.DeleteItem(getId(d))
-	if err == nil {
-		d.SetId("")
-	}
-	return err
 }

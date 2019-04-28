@@ -23,6 +23,12 @@ func emailValidate(i interface{}, k string) (s []string, es []error) {
 	return
 }
 
+func ToSnakeCase(str string) string {
+	snake := regexp.MustCompile("(.)([A-Z][a-z]+)").ReplaceAllString(str, "${1}_${2}")
+	snake = regexp.MustCompile("([a-z0-9])([A-Z])").ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
+}
+
 func urlValidate(i interface{}, k string) (s []string, es []error) {
 	v, ok := i.(string)
 	if !ok {
@@ -51,4 +57,22 @@ func fieldNumber() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return strings.ToUpper(fmt.Sprintf("%x", b))
+}
+
+func labelValue(defaultValue string) *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"label": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Default:  defaultValue,
+			},
+			"value": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+		},
+	}
 }

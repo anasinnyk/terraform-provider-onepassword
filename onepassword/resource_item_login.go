@@ -10,7 +10,7 @@ func resourceItemLogin() *schema.Resource {
 	return &schema.Resource{
 		Read:   resourceItemLoginRead,
 		Create: resourceItemLoginCreate,
-		Delete: resourceItemLoginDelete,
+		Delete: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				err := resourceItemLoginRead(d, meta)
@@ -148,13 +148,4 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.SetId(item.Uuid)
 	return nil
-}
-
-func resourceItemLoginDelete(d *schema.ResourceData, meta interface{}) error {
-	m := meta.(*Meta)
-	err := m.onePassClient.DeleteItem(getId(d))
-	if err == nil {
-		d.SetId("")
-	}
-	return err
 }

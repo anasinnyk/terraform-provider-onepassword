@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/kalaspuffar/base64url"
 	"log"
 	"strings"
@@ -92,16 +93,24 @@ type Section struct {
 }
 
 type SectionField struct {
-	Type  SectionFieldType `json:"k"`
-	Text  string           `json:"t"`
-	Value interface{}      `json:"v"`
-	N     string           `json:"n"`
-	A     Annotation       `json:"a"`
+	Type   SectionFieldType  `json:"k"`
+	Text   string            `json:"t"`
+	Value  interface{}       `json:"v"`
+	N      string            `json:"n"`
+	A      Annotation        `json:"a"`
+	Inputs map[string]string `json:"inputTraits"`
+}
+
+type SectionGroup struct {
+	Selector string
+	Name     string
+	Fields   []string
 }
 
 type Annotation struct {
-	generate string
-	guarded  string
+	generate        string
+	guarded         string
+	clipboardFilter string
 }
 
 type Field struct {
@@ -291,6 +300,15 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 	return err
 }
 
+func resourceItemDelete(d *schema.ResourceData, meta interface{}) error {
+	m := meta.(*Meta)
+	err := m.onePassClient.DeleteItem(getId(d))
+	if err == nil {
+		d.SetId("")
+	}
+	return err
+}
+
 func (o *OnePassClient) DeleteItem(id string) error {
 	return o.Delete(ITEM_RESOURCE, id)
 }
@@ -331,4 +349,40 @@ func (i *Item) ProcessSections() []map[string]interface{} {
 		})
 	}
 	return sections
+}
+
+func parseSectionFromSchema(sections []Section, d *schema.ResourceData, groups []SectionGroup) error {
+	for _, section := range sections {
+		for _, group := range groups {
+			if section.Name == group.Selector {
+				var leftFields []SectionField
+				src := map[string]interface{}{
+					"title": section.Title,
+				}
+				for _, field := range section.Fields {
+					for _, f := range group.Fields {
+						if f == field.N {
+							if field.A.guarded == "yes" {
+								src[ToSnakeCase(f)] = field.Value
+							} else {
+								src[ToSnakeCase(f)] = map[string]interface{}{
+									"value": field.Value,
+									"label": field.Text,
+								}
+							}
+						} else {
+							leftFields = append(leftFields, field)
+						}
+					}
+				}
+				src["field"] = ParseFields(map[string]interface{}{
+					"field": leftFields,
+				})
+				if err := d.Set(group.Name, src); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
