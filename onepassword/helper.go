@@ -58,21 +58,3 @@ func fieldNumber() string {
 	rand.Read(b)
 	return strings.ToUpper(fmt.Sprintf("%x", b))
 }
-
-func labelValue(defaultValue string) *schema.Resource {
-	return &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"label": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-				Default:  defaultValue,
-			},
-			"value": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-		},
-	}
-}

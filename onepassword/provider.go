@@ -56,7 +56,7 @@ func Provider() terraform.ResourceProvider {
 			// "op_item_driver_license": resourceItemDriverLicense(),
 			// "op_item_database": resourceItemDatabase(),
 			// "op_item_bank_account": resourceItemBankAccount(),
-			// "op_item_identity":    resourceItemIdentity(),
+			"op_item_identity":    resourceItemIdentity(),
 			"op_item_password":    resourceItemPassword(),
 			"op_item_credit_card": resourceItemCreditCard(),
 			"op_item_secure_note": resourceItemSecureNote(),
@@ -66,6 +66,7 @@ func Provider() terraform.ResourceProvider {
 			"op_group":            resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
+			"op_item_identity":    dataSourceItemIdentity(),
 			"op_item_password":    dataSourceItemPassword(),
 			"op_item_credit_card": dataSourceItemCreditCard(),
 			"op_item_secure_note": dataSourceItemSecureNote(),

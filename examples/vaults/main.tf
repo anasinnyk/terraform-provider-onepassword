@@ -66,6 +66,67 @@ resource "op_item_secure_note" "sn" {
   }
 }
 
+resource "op_item_identity" "8888888" {
+  name = "Andrii Indetity"
+  vault = "${data.op_vault.this.id}"
+  tags = [
+    "this",
+    "is",
+    "Tagssssss",
+  ]
+  notes = "**Some** _awesome_ ~Markdown~"
+
+  identification = {
+    firstname = "Andrii"
+    initial = "AN"
+    lastname = "Nasinnyk"
+    sex = "male"
+    birth_date = 575553660 //unix-time
+    occupation = "occupation"
+    company = "company"
+    department = "department"
+    job_title = "job_title"
+    field = {
+      string = "extra"
+    }
+  }
+
+  address = {
+    address = {
+      city = "Kyiv"
+      street = "11 Line"
+      country = "ua"
+      zip = "46000"
+      region = "Region"
+      state = "State"
+    }
+    default_phone = "+38000000000"
+    home_phone = "+38000000000"
+    cell_phone = "+38000000000"
+    business_phone = "+38000000000"
+    field = {
+      string = "extra"
+    }
+  }
+
+  internet = {
+    username = "nas1k"
+    email = "andriy.nas@gmail.com"
+    field = {
+      string = "extra"
+    }
+  }
+
+  section = {
+    name = "extra"
+
+    field = {
+      name = "text"
+      string = "text"
+    }
+  }
+}
+
 resource "op_item_password" "8888888" {
   name = "New_888_Password"
   vault = "${data.op_vault.this.id}"
@@ -180,63 +241,6 @@ resource "op_item_credit_card" "cc_own_card" {
     field = {
       name = "extra"
       concealed = "extra"
-    }
-  }
-  contact_info = {
-    title = "contact info"
-    bank = {
-      label = "Bank"
-      value = "PrivatBank"
-    }
-    phone_local = {
-      value = "3031312312312"
-    }
-    phone_toll_free = {
-      label = "I don't know"
-      value = "12313131231"
-    }
-    phone_intl = {
-      value = "+3123123123123"
-      label = "International Phone number"
-    }
-    website = {
-      label = "site"
-      value = "https://privatbank.ua"
-    }
-    field = {
-      name = "extra"
-      email = "info@privatbank.ua"
-    }
-    field = {
-      name = "extra"
-      email = "info@privatbank.ua"
-    }
-  }
-  details = {
-    title = "details"
-    pin = {
-      label = "CODE"
-      value = "ma pin or puc code"
-    }
-    credit_limit = {
-      label = "credit"
-      value = "$1000"
-    }
-    cash_limit = {
-      label = "cash"
-      value = "$1000 000"
-    }
-    interest = {
-      label = "I don't have a dog"
-      value = "hmmm..."
-    }
-    issuenumber = {
-      label = "some number"
-      value = "3222350000"
-    }
-    field = {
-      name = "url"
-      url = "https://privatbank.ua"
     }
   }
 

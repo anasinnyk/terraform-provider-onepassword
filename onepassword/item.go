@@ -24,7 +24,7 @@ const (
 
 const (
 	LoginCategory                Category = "Login"
-	IdentiryCategory             Category = "Identity"
+	IdentityCategory             Category = "Identity"
 	DatabaseCategory             Category = "Database"
 	MembershipCategory           Category = "Membership"
 	WirelessRouterCategory       Category = "Wireless Router"
@@ -147,7 +147,7 @@ func Category2Template(c Category) string {
 	switch c {
 	case LoginCategory:
 		return "001"
-	case IdentiryCategory:
+	case IdentityCategory:
 		return "004"
 	case PasswordCategory:
 		return "005"
@@ -191,7 +191,7 @@ func Template2Category(t string) Category {
 	case "001":
 		return LoginCategory
 	case "004":
-		return IdentiryCategory
+		return IdentityCategory
 	case "005":
 		return PasswordCategory
 	case "106":
