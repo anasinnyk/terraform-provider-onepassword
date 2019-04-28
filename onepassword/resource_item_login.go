@@ -1,9 +1,9 @@
 package onepassword
 
 import (
+	"log"
 	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
-	"log"
 )
 
 func resourceItemLogin() *schema.Resource {
@@ -20,62 +20,46 @@ func resourceItemLogin() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item login name.",
 			},
 			"username": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item login username.",
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				Sensitive:   true,
 				ForceNew:    true,
-				Description: "Item login password.",
 			},
 			"notes": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item login notes.",
 			},
 			"tags": {
 				Type:        schema.TypeList,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item login tags.",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"vault": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Vault for item login.",
 			},
 			"section": {
 				Type:        schema.TypeList,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item login section.",
 				Elem:        sectionSchema,
 			},
 			"url": {
 				Type:         schema.TypeString,
-				Computed:     true,
 				Optional:     true,
 				ForceNew:     true,
-				Description:  "URL for item login.",
 				ValidateFunc: urlValidate,
 			},
 		},

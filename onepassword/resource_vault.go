@@ -20,7 +20,6 @@ func resourceVault() *schema.Resource {
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Required:    true,
-				Description: "Vault name.",
 			},
 		},
 	}

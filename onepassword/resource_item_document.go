@@ -1,9 +1,9 @@
 package onepassword
 
 import (
+	"log"
 	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
-	"log"
 )
 
 func resourceItemDocument() *schema.Resource {
@@ -20,43 +20,34 @@ func resourceItemDocument() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item document name.",
 			},
 			"tags": {
 				Type:        schema.TypeList,
-				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "Item document tags.",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"vault": {
 				Type:        schema.TypeString,
-				Computed:    true,
 				ForceNew:    true,
 				Optional:    true,
-				Description: "Vault for item document.",
 			},
 			"file_path": {
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Required:    true,
-				Description: "File path for item document.",
 			},
 			"file_name": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: "File name.",
 			},
 			"content": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: "File content.",
 			},
 		},
 	}

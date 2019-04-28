@@ -20,7 +20,6 @@ func resourceGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Required:    true,
-				Description: "Group name.",
 			},
 		},
 	}
