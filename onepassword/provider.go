@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"regexp"
 	"strings"
 	"sync"
@@ -44,36 +43,28 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			// "op_item_wireless_router": resourceItemWirelessRouter(),
-			// "op_item_software_license": resourceItemSoftwareLicense(),
-			// "op_item_social_security_number": resourceItemSocialSecurityNumber(),
-			// "op_item_server": resourceItemServer(),
-			// "op_item_reward_program": resourceItemRewardProgram(),
-			// "op_item_passport": resourceItemPassport(),
-			// "op_item_outdoor_license": resourceItemOutdoorLicense(),
-			// "op_item_membership": resourceItemMembership(),
-			// "op_item_email_account": resourceItemEmailAccount(),
-			// "op_item_driver_license": resourceItemDriverLicense(),
-			// "op_item_database": resourceItemDatabase(),
-			// "op_item_bank_account": resourceItemBankAccount(),
-			"op_item_identity":    resourceItemIdentity(),
-			"op_item_password":    resourceItemPassword(),
-			"op_item_credit_card": resourceItemCreditCard(),
-			"op_item_secure_note": resourceItemSecureNote(),
-			"op_item_document":    resourceItemDocument(),
-			"op_item_login":       resourceItemLogin(),
-			"op_vault":            resourceVault(),
-			"op_group":            resourceGroup(),
+			"op_item_common":           resourceItemCommon(),
+			"op_item_software_license": resourceItemSoftwareLicense(),
+			"op_item_identity":         resourceItemIdentity(),
+			"op_item_password":         resourceItemPassword(),
+			"op_item_credit_card":      resourceItemCreditCard(),
+			"op_item_secure_note":      resourceItemSecureNote(),
+			"op_item_document":         resourceItemDocument(),
+			"op_item_login":            resourceItemLogin(),
+			"op_vault":                 resourceVault(),
+			"op_group":                 resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"op_item_identity":    dataSourceItemIdentity(),
-			"op_item_password":    dataSourceItemPassword(),
-			"op_item_credit_card": dataSourceItemCreditCard(),
-			"op_item_secure_note": dataSourceItemSecureNote(),
-			"op_item_document":    dataSourceItemDocument(),
-			"op_item_login":       dataSourceItemLogin(),
-			"op_vault":            dataSourceVault(),
-			"op_group":            dataSourceGroup(),
+			"op_item_common":           dataSourceItemCommon(),
+			"op_item_software_license": dataSourceItemSoftwareLicense(),
+			"op_item_identity":         dataSourceItemIdentity(),
+			"op_item_password":         dataSourceItemPassword(),
+			"op_item_credit_card":      dataSourceItemCreditCard(),
+			"op_item_secure_note":      dataSourceItemSecureNote(),
+			"op_item_document":         dataSourceItemDocument(),
+			"op_item_login":            dataSourceItemLogin(),
+			"op_vault":                 dataSourceVault(),
+			"op_group":                 dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -138,11 +129,9 @@ func (o *OnePassClient) SignIn() error {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Print("[ERROR] ", err)
 		return err
 	}
 
-	log.Print("[DEBUG] SignIn Output: ", out)
 	r := regexp.MustCompile(fmt.Sprintf("export OP_SESSION_%s=\"(.+)\"", strings.Replace(o.Subdomain, "-", "_", 1)))
 	session := r.FindStringSubmatch(string(out))[1]
 	if session == "" {

@@ -3,7 +3,6 @@ package onepassword
 import (
 	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
-	"log"
 )
 
 func resourceItemDocument() *schema.Resource {
@@ -57,7 +56,6 @@ func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
 	vaultId := d.Get("vault").(string)
 	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
-	log.Printf("[DEBUG] %v", v)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/kalaspuffar/base64url"
-	"log"
 	"strings"
 )
 
@@ -106,6 +105,7 @@ type SectionGroup struct {
 type Annotation struct {
 	generate        string
 	guarded         string
+	multiline       string
 	clipboardFilter string
 }
 
@@ -234,7 +234,6 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("[DEBUG] Store Items - %s", details)
 	detailsHash := base64url.Encode([]byte(details))
 	template := Template2Category(v.Template)
 	if template == UnknownCategory {
@@ -377,8 +376,6 @@ func parseSectionFromSchema(sections []Section, d *schema.ResourceData, groups [
 					}
 				}
 				src["field"] = ProcessField(leftFields)
-				err, data := json.Marshal(src)
-				log.Printf("[DEBUG] DEBUG PARSE DATA\n ERR: %s\n DATA: %s", err, data)
 				if err := d.Set(group.Name, []interface{}{src}); err != nil {
 					return err
 				}

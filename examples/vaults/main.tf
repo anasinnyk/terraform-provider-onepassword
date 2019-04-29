@@ -66,6 +66,63 @@ resource "op_item_secure_note" "sn" {
   }
 }
 
+resource "op_item_common" "reward" {
+  name = "reward"
+  tags = [
+    "taggsss",
+    "new",
+  ]
+  vault = "${data.op_vault.this.id}"
+  notes = "**Some** _awesome_ ~Markdown~"
+
+  template = "Reward Program"
+
+  section = {
+    field = {
+      name = "company name"
+      string = "MacPaw"
+    }
+    field = {
+      name = "member name"
+      string = "anasinnyk"
+    }
+  }
+
+  section = {
+    name = "More Information"
+    field = {
+      name = "member since"
+      month_year = 201903
+    }
+  }
+}
+
+
+resource "op_item_software_license" "license" {
+  name = "license"
+  tags = [
+    "taggsss",
+    "new",
+  ]
+  vault = "${data.op_vault.this.id}"
+  notes = "**Some** _awesome_ ~Markdown~"
+
+  main = {
+    title = "NON-EMPTY"
+
+    license_key = "ASDSADASDASDSADSADSDSSDSDSDADASDASDASDADDDSADSADD"
+  }
+
+  section = {
+    name = "extra"
+
+    field = {
+      name = "text"
+      string = "text"
+    }
+  }
+}
+
 resource "op_item_identity" "8888888" {
   name = "Andrii Indetity"
   vault = "${data.op_vault.this.id}"
