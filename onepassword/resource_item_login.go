@@ -94,7 +94,7 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 			d.Set("password", field.Value)
 		}
 	}
-	return d.Set("section", v.ProcessSections())
+	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 
 func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {

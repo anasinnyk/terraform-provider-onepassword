@@ -309,43 +309,47 @@ func ParseTags(d *schema.ResourceData) []string {
 	return tags
 }
 
+func ParseField(fl map[string]interface{}) SectionField {
+	f := SectionField{
+		Text: fl["name"].(string),
+	}
+	for key, val := range fl {
+		if key == "name" {
+			continue
+		}
+
+		isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
+		isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
+		isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
+
+		if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
+			f.N = fieldNumber()
+			f.Value = val
+			switch key {
+			case "sex":
+				f.Type = TypeSex
+			case "totp":
+				f.Type = TypeConcealed
+				f.N = "TOTP_" + f.N
+			case "month_year":
+				f.Type = TypeMonthYear
+			case "url":
+				f.Type = TypeURL
+			case "card_type":
+				f.Type = TypeCard
+			default:
+				f.Type = SectionFieldType(key)
+			}
+		}
+	}
+	return f
+}
+
 func ParseFields(s map[string]interface{}) []SectionField {
 	fields := []SectionField{}
 	for _, field := range s["field"].([]interface{}) {
 		fl := field.(map[string]interface{})
-		f := SectionField{
-			Text: fl["name"].(string),
-		}
-		for key, val := range fl {
-			if key == "name" {
-				continue
-			}
-
-			isNotEmptyString := reflect.TypeOf(val).String() == "string" && val != ""
-			isNotEmptyInt := reflect.TypeOf(val).String() == "int" && val != 0
-			isNotEmptyAddress := strings.HasPrefix(reflect.TypeOf(val).String(), "map") && len(val.(map[string]interface{})) != 0
-
-			if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
-				f.N = fieldNumber()
-				f.Value = val
-				switch key {
-				case "sex":
-					f.Type = TypeSex
-				case "totp":
-					f.Type = TypeConcealed
-					f.N = "TOTP_" + f.N
-				case "month_year":
-					f.Type = TypeMonthYear
-				case "url":
-					f.Type = TypeURL
-				case "card_type":
-					f.Type = TypeCard
-				default:
-					f.Type = SectionFieldType(key)
-				}
-			}
-		}
-		fields = append(fields, f)
+		fields = append(fields, ParseField(fl))
 	}
 	return fields
 }

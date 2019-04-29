@@ -199,27 +199,42 @@ func resourceItemIdentityRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 	d.Set("notes", v.Details.Notes)
-	err = parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
+	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
 		SectionGroup{
 			Name:     "identification",
 			Selector: "name",
-			Fields:   []string{"firstname", "initial", "lastname", "sex", "birthdate", "company", "department", "jobtitle"},
+			Fields: map[string]string{
+				"firstname":  "firstname",
+				"initial":    "initial",
+				"lastname":   "lastname",
+				"sex":        "sex",
+				"birth_date": "birthdate",
+				"occupation": "occupation",
+				"company":    "company",
+				"department": "department",
+				"job_title":  "jobtitle",
+			},
 		},
 		SectionGroup{
 			Name:     "address",
 			Selector: "address",
-			Fields:   []string{"address", "defphone", "homephone", "cellphone", "busphone"},
+			Fields: map[string]string{
+				"address":        "address",
+				"default_phone":  "defphone",
+				"home_phone":     "homephone",
+				"cell_phone":     "cellphone",
+				"business_phone": "busphone",
+			},
 		},
 		SectionGroup{
 			Name:     "internet",
 			Selector: "internet",
-			Fields:   []string{"username", "email"},
+			Fields: map[string]string{
+				"username": "username",
+				"email":    "email",
+			},
 		},
 	})
-	if err != nil {
-		return err
-	}
-	return d.Set("section", v.ProcessSections())
 }
 
 func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error {
@@ -283,7 +298,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 								},
 							},
 							SectionField{
-								Type:  "data",
+								Type:  "date",
 								Text:  "birth date",
 								Value: main["birth_date"].(int),
 								N:     "birthdate",
@@ -393,7 +408,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-						}, ParseFields(main)...),
+						}, ParseFields(address)...),
 					},
 					Section{
 						Title: internet["title"].(string),
@@ -423,7 +438,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"keyboard": "EmailAddress",
 								},
 							},
-						}, ParseFields(main)...),
+						}, ParseFields(internet)...),
 					},
 				},
 				ParseSections(d)...,

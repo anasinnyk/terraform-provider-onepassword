@@ -100,7 +100,7 @@ type SectionField struct {
 type SectionGroup struct {
 	Selector string
 	Name     string
-	Fields   []string
+	Fields   map[string]string
 }
 
 type Annotation struct {
@@ -309,76 +309,84 @@ func (o *OnePassClient) DeleteItem(id string) error {
 	return o.Delete(ITEM_RESOURCE, id)
 }
 
-func (i *Item) ProcessSections() []map[string]interface{} {
-	sections := make([]map[string]interface{}, 0, len(i.Details.Sections))
-	for _, section := range i.Details.Sections {
-		fields := make([]map[string]interface{}, 0, len(section.Fields))
-		for _, field := range section.Fields {
-			f := map[string]interface{}{
-				"name": field.Text,
-			}
-			var key string
-			switch field.Type {
-			case TypeSex:
-				key = "sex"
-			case TypeURL:
-				key = "url"
-			case TypeMonthYear:
-				key = "month_year"
-			case TypeCard:
-				key = "card_type"
-			case TypeConcealed:
-				if strings.HasPrefix(field.N, "TOTP_") {
-					key = "totp"
-				} else {
-					key = "concealed"
-				}
-			default:
-				key = string(field.Type)
-			}
-			f[key] = field.Value
-			fields = append(fields, f)
+func ProcessField(srcFields []SectionField) []map[string]interface{} {
+	fields := make([]map[string]interface{}, 0, len(srcFields))
+	for _, field := range srcFields {
+		f := map[string]interface{}{
+			"name": field.Text,
 		}
+		var key string
+		switch field.Type {
+		case TypeSex:
+			key = "sex"
+		case TypeURL:
+			key = "url"
+		case TypeMonthYear:
+			key = "month_year"
+		case TypeCard:
+			key = "card_type"
+		case TypeConcealed:
+			if strings.HasPrefix(field.N, "TOTP_") {
+				key = "totp"
+			} else {
+				key = "concealed"
+			}
+		default:
+			key = string(field.Type)
+		}
+		f[key] = field.Value
+		fields = append(fields, f)
+		f = map[string]interface{}{}
+	}
+	return fields
+}
+
+func ProcessSections(srcSections []Section) []map[string]interface{} {
+	sections := make([]map[string]interface{}, 0, len(srcSections))
+	for _, section := range srcSections {
 		sections = append(sections, map[string]interface{}{
 			"name":  section.Title,
-			"field": fields,
+			"field": ProcessField(section.Fields),
 		})
 	}
 	return sections
 }
 
 func parseSectionFromSchema(sections []Section, d *schema.ResourceData, groups []SectionGroup) error {
+	leftSections := []Section{}
 	for _, section := range sections {
+		var use bool
 		for _, group := range groups {
 			if section.Name == group.Selector {
+				use = true
 				var leftFields []SectionField
 				src := map[string]interface{}{
 					"title": section.Title,
 				}
 				for _, field := range section.Fields {
-					for _, f := range group.Fields {
+					found := false
+					for k, f := range group.Fields {
 						if f == field.N {
-							if field.A.guarded == "yes" {
-								src[ToSnakeCase(f)] = field.Value
-							} else {
-								src[ToSnakeCase(f)] = map[string]interface{}{
-									"value": field.Value,
-									"label": field.Text,
-								}
-							}
-						} else {
-							leftFields = append(leftFields, field)
+							src[k] = field.Value
+							found = true
+							continue
 						}
 					}
+					if !found {
+						leftFields = append(leftFields, field)
+					}
 				}
-				src["field"] = ParseFields(map[string]interface{}{
-					"field": leftFields,
-				})
-				if err := d.Set(group.Name, src); err != nil {
+				src["field"] = ProcessField(leftFields)
+				err, data := json.Marshal(src)
+				log.Printf("[DEBUG] DEBUG PARSE DATA\n ERR: %s\n DATA: %s", err, data)
+				if err := d.Set(group.Name, []interface{}{src}); err != nil {
 					return err
 				}
 			}
 		}
+		if !use {
+			leftSections = append(leftSections, section)
+		}
 	}
-	return nil
+	return d.Set("section", ProcessSections(leftSections))
 }

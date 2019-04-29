@@ -87,6 +87,7 @@ resource "op_item_identity" "8888888" {
     department = "department"
     job_title = "job_title"
     field = {
+      name = "extra_name"
       string = "extra"
     }
   }
@@ -234,9 +235,9 @@ resource "op_item_credit_card" "cc_own_card" {
     title = "Rewrite Main Section Name"
     cardholder = "Andrii Nasinnyk"
     type = "mc"
-    ccnum = "5351 0000 0000 0000"
+    number = "5351 0000 0000 0000"
     cvv = "000"
-    expiry = 201905
+    expiry_date = 201905
     valid_from = 201805
     field = {
       name = "extra"

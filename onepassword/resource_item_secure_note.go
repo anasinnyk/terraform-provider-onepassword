@@ -66,7 +66,7 @@ func resourceItemSecureNoteRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 	d.Set("notes", v.Details.Notes)
-	return d.Set("section", v.ProcessSections())
+	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 
 func resourceItemSecureNoteCreate(d *schema.ResourceData, meta interface{}) error {

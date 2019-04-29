@@ -63,7 +63,7 @@ func resourceItemCreditCard() *schema.Resource {
 							ForceNew:     true,
 							ValidateFunc: orEmpty(validation.StringInSlice([]string{"mc", "visa", "amex", "diners", "carteblanche", "discover", "jcb", "maestro", "visaelectron", "laser", "unionpay"}, false)),
 						},
-						"ccnum": {
+						"number": {
 							Type:     schema.TypeString,
 							Optional: true,
 							ForceNew: true,
@@ -74,7 +74,7 @@ func resourceItemCreditCard() *schema.Resource {
 							ForceNew:  true,
 							Sensitive: true,
 						},
-						"expiry": {
+						"expiry_date": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							ForceNew: true,
@@ -115,17 +115,20 @@ func resourceItemCreditCardRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 	d.Set("notes", v.Details.Notes)
-	err = parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
+	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
 		SectionGroup{
 			Name:     "main",
 			Selector: "",
-			Fields:   []string{"cardholder", "ccnum", "type", "cvv", "expiry", "validFrom"},
+			Fields: map[string]string{
+				"cardholder":  "cardholder",
+				"number":      "ccnum",
+				"type":        "type",
+				"cvv":         "cvv",
+				"expiry_date": "expiry",
+				"valid_from":  "validFrom",
+			},
 		},
 	})
-	if err != nil {
-		return err
-	}
-	return d.Set("section", v.ProcessSections())
 }
 
 func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) error {
@@ -166,7 +169,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 							SectionField{
 								Type:  "string",
 								Text:  "number",
-								Value: main["ccnum"].(string),
+								Value: main["number"].(string),
 								N:     "ccnum",
 								A: Annotation{
 									guarded:         "yes",
@@ -192,7 +195,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 							SectionField{
 								Type:  "monthYear",
 								Text:  "expiry date",
-								Value: main["expiry"].(int),
+								Value: main["expiry_date"].(int),
 								N:     "expiry",
 								A: Annotation{
 									guarded: "yes",

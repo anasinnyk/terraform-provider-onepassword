@@ -82,7 +82,7 @@ func resourceItemPasswordRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 	d.Set("password", v.Details.Password)
-	return d.Set("section", v.ProcessSections())
+	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 
 func resourceItemPasswordCreate(d *schema.ResourceData, meta interface{}) error {
