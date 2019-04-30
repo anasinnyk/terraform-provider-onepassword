@@ -1,20 +1,20 @@
 package onepassword
 
 import (
-	"archive/zip"
-	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
 	"io"
 	"log"
-	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
+	"sync"
 	"runtime"
 	"strings"
-	"sync"
+	"os/exec"
+	"net/http"
+	"archive/zip"
+	"path/filepath"
+	"encoding/json"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func Provider() terraform.ResourceProvider {
