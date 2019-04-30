@@ -1,16 +1,19 @@
 package onepassword
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"io"
-	"regexp"
-	"strings"
-	"sync"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"io"
+	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"sync"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -43,28 +46,28 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"op_item_common":           resourceItemCommon(),
-			"op_item_software_license": resourceItemSoftwareLicense(),
-			"op_item_identity":         resourceItemIdentity(),
-			"op_item_password":         resourceItemPassword(),
-			"op_item_credit_card":      resourceItemCreditCard(),
-			"op_item_secure_note":      resourceItemSecureNote(),
-			"op_item_document":         resourceItemDocument(),
-			"op_item_login":            resourceItemLogin(),
-			"op_vault":                 resourceVault(),
-			"op_group":                 resourceGroup(),
+			"onepassword_item_common":           resourceItemCommon(),
+			"onepassword_item_software_license": resourceItemSoftwareLicense(),
+			"onepassword_item_identity":         resourceItemIdentity(),
+			"onepassword_item_password":         resourceItemPassword(),
+			"onepassword_item_credit_card":      resourceItemCreditCard(),
+			"onepassword_item_secure_note":      resourceItemSecureNote(),
+			"onepassword_item_document":         resourceItemDocument(),
+			"onepassword_item_login":            resourceItemLogin(),
+			"onepassword_vault":                 resourceVault(),
+			"onepassword_group":                 resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"op_item_common":           dataSourceItemCommon(),
-			"op_item_software_license": dataSourceItemSoftwareLicense(),
-			"op_item_identity":         dataSourceItemIdentity(),
-			"op_item_password":         dataSourceItemPassword(),
-			"op_item_credit_card":      dataSourceItemCreditCard(),
-			"op_item_secure_note":      dataSourceItemSecureNote(),
-			"op_item_document":         dataSourceItemDocument(),
-			"op_item_login":            dataSourceItemLogin(),
-			"op_vault":                 dataSourceVault(),
-			"op_group":                 dataSourceGroup(),
+			"onepassword_item_common":           dataSourceItemCommon(),
+			"onepassword_item_software_license": dataSourceItemSoftwareLicense(),
+			"onepassword_item_identity":         dataSourceItemIdentity(),
+			"onepassword_item_password":         dataSourceItemPassword(),
+			"onepassword_item_credit_card":      dataSourceItemCreditCard(),
+			"onepassword_item_secure_note":      dataSourceItemSecureNote(),
+			"onepassword_item_document":         dataSourceItemDocument(),
+			"onepassword_item_login":            dataSourceItemLogin(),
+			"onepassword_vault":                 dataSourceVault(),
+			"onepassword_group":                 dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -101,13 +104,88 @@ func NewMeta(d *schema.ResourceData) (*Meta, error) {
 	return m, err
 }
 
+func unzip(src string, dest string) ([]string, error) {
+	var filenames []string
+
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return filenames, err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		fpath := filepath.Join(dest, f.Name)
+		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return filenames, fmt.Errorf("%s: illegal file path", fpath)
+		}
+		filenames = append(filenames, fpath)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fpath, os.ModePerm)
+			continue
+		}
+		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return filenames, err
+		}
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return filenames, err
+		}
+		rc, err := f.Open()
+		if err != nil {
+			return filenames, err
+		}
+		_, err = io.Copy(outFile, rc)
+		outFile.Close()
+		rc.Close()
+
+		if err != nil {
+			return filenames, err
+		}
+	}
+	return filenames, nil
+}
+
+func installOPClient() (string, error) {
+	version := "v0.5.5"
+	if os.Getenv("OP_VERSION") != "" {
+		version = os.Getenv("OP_VERSION")
+	}
+	binZip := fmt.Sprintf("/tmp/op_%s.zip", version)
+	url := fmt.Sprintf("https://cache.agilebits.com/dist/1P/op/pkg/%s/op_%s_%s_%s.zip", version, runtime.GOOS, runtime.GOARCH, version)
+	if _, err := os.Stat(binZip); os.IsNotExist(err) {
+		resp, err := http.Get(url)
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+
+		out, err := os.Create(binZip)
+		if err != nil {
+			return "", err
+		}
+		defer out.Close()
+		if _, err = io.Copy(out, resp.Body); err != nil {
+			return "", err
+		}
+		if _, err := unzip(binZip, "/tmp/terraform-provider-onepassword/"+version); err != nil {
+			return "", err
+		}
+	}
+	return "/tmp/terraform-provider-onepassword/" + version + "/op", nil
+}
+
 func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
+	bin, err := installOPClient()
+	if err != nil {
+		return err, nil
+	}
+
 	op := &OnePassClient{
 		Email:     m.data.Get("email").(string),
 		Password:  m.data.Get("password").(string),
 		SecretKey: m.data.Get("secret_key").(string),
 		Subdomain: m.data.Get("subdomain").(string),
-		PathToOp:  "/usr/local/bin/op",
+		PathToOp:  bin,
 		Session:   "",
 	}
 	if err := op.SignIn(); err != nil {
@@ -117,7 +195,7 @@ func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
 }
 
 func (o *OnePassClient) SignIn() error {
-	cmd := exec.Command(o.PathToOp, "signin", o.Subdomain, o.Email, o.SecretKey)
+	cmd := exec.Command(o.PathToOp, "signin", o.Subdomain, o.Email, o.SecretKey, "--output=raw")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return err
@@ -127,17 +205,12 @@ func (o *OnePassClient) SignIn() error {
 		io.WriteString(stdin, fmt.Sprintf("%s\n", o.Password))
 	}()
 
-	out, err := cmd.CombinedOutput()
+	session, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
 
-	r := regexp.MustCompile(fmt.Sprintf("export OP_SESSION_%s=\"(.+)\"", strings.Replace(o.Subdomain, "-", "_", 1)))
-	session := r.FindStringSubmatch(string(out))[1]
-	if session == "" {
-		return fmt.Errorf("Cannot parse session from output: %s", out)
-	}
-	o.Session = session
+	o.Session = string(session)
 	return nil
 }
 
@@ -150,7 +223,7 @@ func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	defer m.Unlock()
 	res, err := cmd.CombinedOutput()
 	if err != nil {
-		err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args, err, res)
+		err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args[:len(args)-1], err, res)
 	}
 	return err, res
 }
