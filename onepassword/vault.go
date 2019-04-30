@@ -4,37 +4,37 @@ import (
 	"encoding/json"
 )
 
-const VAULT_RESOURCE = "vault"
+const VaultResource = "vault"
 
 type Vault struct {
-	Uuid string
+	UUID string
 	Name string
 }
 
-func (o *OnePassClient) ReadVault(id string) (error, *Vault) {
+func (o *OnePassClient) ReadVault(id string) (*Vault, error) {
 	vault := &Vault{}
-	err, res := o.runCmd(ONE_PASSWORD_COMMAND_GET, VAULT_RESOURCE, id)
+	err, res := o.runCmd(ONE_PASSWORD_COMMAND_GET, VaultResource, id)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	if err = json.Unmarshal(res, vault); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, vault
+	return vault, nil
 }
 
-func (o *OnePassClient) CreateVault(v *Vault) (error, *Vault) {
-	args := []string{ONE_PASSWORD_COMMAND_CREATE, VAULT_RESOURCE, v.Name}
+func (o *OnePassClient) CreateVault(v *Vault) (*Vault, error) {
+	args := []string{ONE_PASSWORD_COMMAND_CREATE, VaultResource, v.Name}
 	err, res := o.runCmd(args...)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	if err = json.Unmarshal(res, v); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, v
+	return v, nil
 }
 
 func (o *OnePassClient) DeleteVault(id string) error {
-	return o.Delete(VAULT_RESOURCE, id)
+	return o.Delete(VaultResource, id)
 }

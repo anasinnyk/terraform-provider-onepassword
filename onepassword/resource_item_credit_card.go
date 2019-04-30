@@ -99,16 +99,16 @@ func resourceItemCreditCard() *schema.Resource {
 
 func resourceItemCreditCardRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 	if v.Template != Category2Template(CreditCardCategory) {
-		return errors.New("Item is not from " + string(CreditCardCategory))
+		return errors.New("item is not from " + string(CreditCardCategory))
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	d.Set("name", v.Overview.Title)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
@@ -224,6 +224,6 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

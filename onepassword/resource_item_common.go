@@ -68,13 +68,13 @@ func resourceItemCommon() *schema.Resource {
 
 func resourceItemCommonRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
 		return err
 	}
@@ -105,6 +105,6 @@ func resourceItemCommonCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

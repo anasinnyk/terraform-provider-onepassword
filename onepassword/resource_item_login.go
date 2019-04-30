@@ -67,18 +67,18 @@ func resourceItemLogin() *schema.Resource {
 
 func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 	if v.Template != Category2Template(LoginCategory) {
-		return errors.New("Item is not from " + string(LoginCategory))
+		return errors.New("item is not from " + string(LoginCategory))
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	d.Set("name", v.Overview.Title)
-	if err := d.Set("url", v.Overview.Url); err != nil {
+	if err := d.Set("url", v.Overview.URL); err != nil {
 		return err
 	}
 	d.Set("notes", v.Details.Notes)
@@ -101,7 +101,7 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 		Template: Category2Template(LoginCategory),
 		Overview: Overview{
 			Title: d.Get("name").(string),
-			Url:   d.Get("url").(string),
+			URL:   d.Get("url").(string),
 			Tags:  ParseTags(d),
 		},
 		Details: Details{
@@ -128,6 +128,6 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

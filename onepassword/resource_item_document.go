@@ -54,26 +54,25 @@ func resourceItemDocument() *schema.Resource {
 
 func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 	if v.Template != Category2Template(DocumentCategory) {
-		return errors.New("Item is not from " + string(DocumentCategory))
+		return errors.New("item is not from " + string(DocumentCategory))
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	d.Set("name", v.Overview.Title)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 
-	if err, content := m.onePassClient.ReadDocument(v.Uuid); err != nil {
+	err, content := m.onePassClient.ReadDocument(v.UUID); 
+	if err != nil {
 		return err
-	} else {
-		d.Set("content", content)
 	}
-	return nil
+	return d.Set("content", content)
 }
 
 func resourceItemDocumentCreate(d *schema.ResourceData, meta interface{}) error {
@@ -90,6 +89,6 @@ func resourceItemDocumentCreate(d *schema.ResourceData, meta interface{}) error 
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

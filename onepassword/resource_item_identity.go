@@ -183,16 +183,16 @@ func resourceItemIdentity() *schema.Resource {
 
 func resourceItemIdentityRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 	if v.Template != Category2Template(IdentityCategory) {
-		return errors.New("Item is not from " + string(IdentityCategory))
+		return errors.New("item is not from " + string(IdentityCategory))
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	d.Set("name", v.Overview.Title)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
@@ -452,6 +452,6 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

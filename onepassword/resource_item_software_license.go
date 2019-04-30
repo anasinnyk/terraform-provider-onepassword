@@ -71,16 +71,16 @@ func resourceItemSoftwareLicense() *schema.Resource {
 
 func resourceItemSoftwareLicenseRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	vaultId := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getId(d), vaultId)
+	vaultID := d.Get("vault").(string)
+	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
 	if v.Template != Category2Template(SoftwareLicenseCategory) {
-		return errors.New("Item is not from " + string(SoftwareLicenseCategory))
+		return errors.New("item is not from " + string(SoftwareLicenseCategory))
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	d.Set("name", v.Overview.Title)
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
@@ -135,6 +135,6 @@ func resourceItemSoftwareLicenseCreate(d *schema.ResourceData, meta interface{})
 	if err != nil {
 		return err
 	}
-	d.SetId(item.Uuid)
+	d.SetId(item.UUID)
 	return nil
 }

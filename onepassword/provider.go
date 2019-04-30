@@ -56,7 +56,6 @@ func Provider() terraform.ResourceProvider {
 			"onepassword_item_document":         resourceItemDocument(),
 			"onepassword_item_login":            resourceItemLogin(),
 			"onepassword_vault":                 resourceVault(),
-			"onepassword_group":                 resourceGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"onepassword_item_common":           dataSourceItemCommon(),
@@ -68,7 +67,6 @@ func Provider() terraform.ResourceProvider {
 			"onepassword_item_document":         dataSourceItemDocument(),
 			"onepassword_item_login":            dataSourceItemLogin(),
 			"onepassword_vault":                 dataSourceVault(),
-			"onepassword_group":                 dataSourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -228,7 +226,7 @@ func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	defer m.Unlock()
 	res, err := cmd.CombinedOutput()
 	if err != nil {
-		err = fmt.Errorf("Some error in command %v\nError: %s\nOutput: %s", args[:len(args)-1], err, res)
+		err = fmt.Errorf("some error in command %v\nError: %s\nOutput: %s", args[:len(args)-1], err, res)
 	}
 	return err, res
 }
@@ -238,14 +236,14 @@ func getResultId(r []byte) (error, string) {
 	if err := json.Unmarshal(r, result); err != nil {
 		return err, ""
 	}
-	return nil, result.Uuid
+	return nil, result.UUID
 }
 
 type Resource struct {
-	Uuid string `json:"uuid"`
+	UUID string `json:"uuid"`
 }
 
-func getId(d *schema.ResourceData) string {
+func getID(d *schema.ResourceData) string {
 	if d.Id() != "" {
 		return d.Id()
 	} else {

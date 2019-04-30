@@ -27,18 +27,18 @@ func resourceVault() *schema.Resource {
 
 func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err, v := m.onePassClient.ReadVault(getId(d))
+	v, err := m.onePassClient.ReadVault(getID(d))
 	if err != nil {
 		return err
 	}
 
-	d.SetId(v.Uuid)
+	d.SetId(v.UUID)
 	return d.Set("name", v.Name)
 }
 
 func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err, _ := m.onePassClient.CreateVault(&Vault{
+	_, err := m.onePassClient.CreateVault(&Vault{
 		Name: d.Get("name").(string),
 	})
 	if err != nil {
@@ -49,7 +49,7 @@ func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceVaultDelete(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err := m.onePassClient.DeleteVault(getId(d))
+	err := m.onePassClient.DeleteVault(getID(d))
 	if err == nil {
 		d.SetId("")
 	}

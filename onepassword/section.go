@@ -324,7 +324,7 @@ func ParseField(fl map[string]interface{}) SectionField {
 
 		if isNotEmptyString || isNotEmptyInt || isNotEmptyAddress {
 			f.N = f.Text
-			if err, val := fieldNumber(); err == nil {
+			if val, err := fieldNumber(); err == nil {
 				f.N = val
 			}
 			f.Value = val
@@ -362,7 +362,7 @@ func ParseSections(d *schema.ResourceData) []Section {
 	for _, section := range d.Get("section").([]interface{}) {
 		s := section.(map[string]interface{})
 		secName := s["name"].(string)
-		if err, val := fieldNumber(); err == nil {
+		if val, err := fieldNumber(); err == nil {
 			secName = val
 		}
 		sections = append(sections, Section{

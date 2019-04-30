@@ -53,10 +53,10 @@ func orEmpty(f schema.SchemaValidateFunc) schema.SchemaValidateFunc {
 	}
 }
 
-func fieldNumber() (error, string) {
+func fieldNumber() (string, error) {
 	b := make([]byte, 16)
 	if _, err := rand.Read(b); err != nil {
-		return err, ""
+		return "", err
 	}
-	return nil, strings.ToUpper(fmt.Sprintf("%x", b))
+	return strings.ToUpper(fmt.Sprintf("%x", b)), nil
 }

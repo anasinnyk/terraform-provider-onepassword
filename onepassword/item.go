@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-const ITEM_RESOURCE = "item"
-const DOCUMENT_RESOURCE = "document"
+const ItemResource = "item"
+const DocumentResource = "document"
 
 type SectionFieldType string
 type FieldType string
@@ -67,9 +67,9 @@ type Address struct {
 }
 
 type Item struct {
-	Uuid     string   `json:"uuid"`
-	Template string   `json:"templateUuid"`
-	Vault    string   `json:"vaultUuid"`
+	UUID     string   `json:"uuid"`
+	Template string   `json:"templateUUID"`
+	Vault    string   `json:"vaultUUID"`
 	Overview Overview `json:"overview"`
 	Details  Details  `json:"details"`
 }
@@ -118,20 +118,20 @@ type Field struct {
 
 type Overview struct {
 	Title string   `json:"title"`
-	Url   string   `json:"url"`
+	URL   string   `json:"url"`
 	Tags  []string `json:"tags"`
 }
 
-func (o *OnePassClient) ReadItem(id string, vaultId string) (error, *Item) {
+func (o *OnePassClient) ReadItem(id string, vaultID string) (error, *Item) {
 	item := &Item{}
 	args := []string{
 		ONE_PASSWORD_COMMAND_GET,
-		ITEM_RESOURCE,
+		ItemResource,
 		id,
 	}
 
-	if vaultId != "" {
-		args = append(args, fmt.Sprintf("--vault=%s", vaultId))
+	if vaultID != "" {
+		args = append(args, fmt.Sprintf("--vault=%s", vaultID))
 	}
 	err, res := o.runCmd(args...)
 	if err != nil {
@@ -237,16 +237,16 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	detailsHash := base64url.Encode([]byte(details))
 	template := Template2Category(v.Template)
 	if template == UnknownCategory {
-		return errors.New("Unknown template id " + v.Template)
+		return errors.New("unknown template id " + v.Template)
 	}
 
 	args := []string{
 		ONE_PASSWORD_COMMAND_CREATE,
-		ITEM_RESOURCE,
+		ItemResource,
 		string(template),
 		detailsHash,
 		fmt.Sprintf("--title=%s", v.Overview.Title),
-		fmt.Sprintf("--url=%s", v.Overview.Url),
+		fmt.Sprintf("--url=%s", v.Overview.URL),
 		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
 	}
 
@@ -257,7 +257,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	if err == nil {
 		err, id := getResultId(res)
 		if err == nil {
-			v.Uuid = id
+			v.UUID = id
 		}
 	}
 	return err
@@ -266,7 +266,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 func (o *OnePassClient) ReadDocument(id string) (error, string) {
 	err, content := o.runCmd(
 		ONE_PASSWORD_COMMAND_GET,
-		DOCUMENT_RESOURCE,
+		DocumentResource,
 		id,
 	)
 	return err, string(content)
@@ -275,7 +275,7 @@ func (o *OnePassClient) ReadDocument(id string) (error, string) {
 func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 	args := []string{
 		ONE_PASSWORD_COMMAND_CREATE,
-		DOCUMENT_RESOURCE,
+		DocumentResource,
 		filePath,
 		fmt.Sprintf("--title=%s", v.Overview.Title),
 		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
@@ -289,7 +289,7 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 	if err == nil {
 		err, id := getResultId(res)
 		if err == nil {
-			v.Uuid = id
+			v.UUID = id
 		}
 	}
 	return err
@@ -297,7 +297,7 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 
 func resourceItemDelete(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
-	err := m.onePassClient.DeleteItem(getId(d))
+	err := m.onePassClient.DeleteItem(getID(d))
 	if err == nil {
 		d.SetId("")
 	}
@@ -305,7 +305,7 @@ func resourceItemDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func (o *OnePassClient) DeleteItem(id string) error {
-	return o.Delete(ITEM_RESOURCE, id)
+	return o.Delete(ItemResource, id)
 }
 
 func ProcessField(srcFields []SectionField) []map[string]interface{} {
