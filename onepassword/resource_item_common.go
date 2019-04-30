@@ -75,8 +75,12 @@ func resourceItemCommonRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.Uuid)
-	d.Set("name", v.Overview.Title)
-	d.Set("notes", v.Details.Notes)
+	if err := d.Set("name", v.Overview.Title); err != nil {
+		return err
+	}
+	if err := d.Set("notes", v.Details.Notes); err != nil {
+		return err
+	}
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 	d.Set("template", string(Template2Category(v.Template)))

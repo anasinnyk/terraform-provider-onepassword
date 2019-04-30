@@ -33,8 +33,7 @@ func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.Uuid)
-	d.Set("name", v.Name)
-	return nil
+	return d.Set("name", v.Name)
 }
 
 func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
