@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/kalaspuffar/base64url"
-	"strings"
 )
 
 const ItemResource = "item"
@@ -255,8 +256,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	}
 	res, err := o.runCmd(args...)
 	if err == nil {
-		err, id := getResultId(res)
-		if err == nil {
+		if id, err := getResultID(res); err == nil {
 			v.UUID = id
 		}
 	}
@@ -287,8 +287,7 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 
 	res, err := o.runCmd(args...)
 	if err == nil {
-		err, id := getResultId(res)
-		if err == nil {
+		if id, err := getResultID(res); err == nil {
 			v.UUID = id
 		}
 	}

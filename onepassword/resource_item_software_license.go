@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -94,7 +95,7 @@ func resourceItemSoftwareLicenseRead(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
-		SectionGroup{
+		{
 			Name:     "main",
 			Selector: "",
 			Fields: map[string]string{
@@ -113,11 +114,11 @@ func resourceItemSoftwareLicenseCreate(d *schema.ResourceData, meta interface{})
 			Notes: d.Get("notes").(string),
 			Sections: append(
 				[]Section{
-					Section{
+					{
 						Title: main["title"].(string),
 						Name:  "",
 						Fields: append([]SectionField{
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "license key",
 								Value: main["license_key"].(string),

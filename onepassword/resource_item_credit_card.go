@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 )
@@ -134,7 +135,7 @@ func resourceItemCreditCardRead(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
-		SectionGroup{
+		{
 			Name:     "main",
 			Selector: "",
 			Fields: map[string]string{
@@ -158,11 +159,11 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 			Notes: d.Get("notes").(string),
 			Sections: append(
 				[]Section{
-					Section{
+					{
 						Title: main["title"].(string),
 						Name:  "",
 						Fields: append([]SectionField{
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "cardholder",
 								Value: main["cardholder"].(string),
@@ -175,7 +176,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 									"keyboard":           "Default",
 								},
 							},
-							SectionField{
+							{
 								Type:  "cctype",
 								Text:  "type",
 								Value: main["type"].(string),
@@ -184,7 +185,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "number",
 								Value: main["number"].(string),
@@ -197,7 +198,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 									"keyboard": "NumberPad",
 								},
 							},
-							SectionField{
+							{
 								Type:  "concealed",
 								Text:  "verification number",
 								Value: main["cvv"].(string),
@@ -210,7 +211,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 									"keyboard": "NumberPad",
 								},
 							},
-							SectionField{
+							{
 								Type:  "monthYear",
 								Text:  "expiry date",
 								Value: main["expiry_date"].(int),
@@ -219,7 +220,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "monthYear",
 								Text:  "valid from",
 								Value: main["valid_from"].(int),

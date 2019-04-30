@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -94,10 +95,14 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	for _, field := range v.Details.Fields {
 		if field.Name == "username" {
-			d.Set("username", field.Value)
+			if err := d.Set("username", field.Value); err != nil {
+				return err
+			}
 		}
 		if field.Name == "password" {
-			d.Set("password", field.Value)
+			if err := d.Set("password", field.Value); err != nil {
+				return err
+			}
 		}
 	}
 	return d.Set("section", ProcessSections(v.Details.Sections))
@@ -115,13 +120,13 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 		Details: Details{
 			Notes: d.Get("notes").(string),
 			Fields: []Field{
-				Field{
+				{
 					Name:        "username",
 					Designation: "username",
 					Value:       d.Get("username").(string),
 					Type:        FieldText,
 				},
-				Field{
+				{
 					Name:        "password",
 					Designation: "password",
 					Value:       d.Get("password").(string),

@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
 

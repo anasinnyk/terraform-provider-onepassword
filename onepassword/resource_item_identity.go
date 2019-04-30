@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 )
@@ -206,7 +207,7 @@ func resourceItemIdentityRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
-		SectionGroup{
+		{
 			Name:     "identification",
 			Selector: "name",
 			Fields: map[string]string{
@@ -221,7 +222,7 @@ func resourceItemIdentityRead(d *schema.ResourceData, meta interface{}) error {
 				"job_title":  "jobtitle",
 			},
 		},
-		SectionGroup{
+		{
 			Name:     "address",
 			Selector: "address",
 			Fields: map[string]string{
@@ -232,7 +233,7 @@ func resourceItemIdentityRead(d *schema.ResourceData, meta interface{}) error {
 				"business_phone": "busphone",
 			},
 		},
-		SectionGroup{
+		{
 			Name:     "internet",
 			Selector: "internet",
 			Fields: map[string]string{
@@ -254,11 +255,11 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 			Notes: d.Get("notes").(string),
 			Sections: append(
 				[]Section{
-					Section{
+					{
 						Title: main["title"].(string),
 						Name:  "name",
 						Fields: append([]SectionField{
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "firstname",
 								Value: main["firstname"].(string),
@@ -270,7 +271,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "initial",
 								Value: main["initial"].(string),
@@ -282,7 +283,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "lastname",
 								Value: main["lastname"].(string),
@@ -294,7 +295,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "menu",
 								Text:  "sex",
 								Value: main["sex"].(string),
@@ -303,7 +304,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "date",
 								Text:  "birth date",
 								Value: main["birth_date"].(int),
@@ -312,7 +313,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "occupation",
 								Value: main["occupation"].(string),
@@ -324,7 +325,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "company",
 								Value: main["company"].(string),
@@ -336,7 +337,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "department",
 								Value: main["department"].(string),
@@ -348,7 +349,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Words",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "job title",
 								Value: main["job_title"].(string),
@@ -362,11 +363,11 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 							},
 						}, ParseFields(main)...),
 					},
-					Section{
+					{
 						Title: address["title"].(string),
 						Name:  "address",
 						Fields: append([]SectionField{
-							SectionField{
+							{
 								Type:  "address",
 								Text:  "address",
 								Value: address["address"].(map[string]interface{}),
@@ -378,7 +379,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Sentences",
 								},
 							},
-							SectionField{
+							{
 								Type:  "phone",
 								Text:  "default phone",
 								Value: address["default_phone"].(string),
@@ -387,7 +388,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "phone",
 								Text:  "home",
 								Value: address["home_phone"].(string),
@@ -396,7 +397,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "phone",
 								Text:  "cell",
 								Value: address["cell_phone"].(string),
@@ -405,7 +406,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									guarded: "yes",
 								},
 							},
-							SectionField{
+							{
 								Type:  "phone",
 								Text:  "business",
 								Value: address["business_phone"].(string),
@@ -416,11 +417,11 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 							},
 						}, ParseFields(address)...),
 					},
-					Section{
+					{
 						Title: internet["title"].(string),
 						Name:  "internet",
 						Fields: append([]SectionField{
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "username",
 								Value: internet["username"].(string),
@@ -432,7 +433,7 @@ func resourceItemIdentityCreate(d *schema.ResourceData, meta interface{}) error 
 									"autocapitalization": "Sentences",
 								},
 							},
-							SectionField{
+							{
 								Type:  "string",
 								Text:  "email",
 								Value: internet["email"].(string),

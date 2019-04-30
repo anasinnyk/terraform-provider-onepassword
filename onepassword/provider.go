@@ -4,8 +4,6 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
 	"io"
 	"log"
 	"net/http"
@@ -15,6 +13,9 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -234,12 +235,12 @@ func (o *OnePassClient) runCmd(args ...string) ([]byte, error) {
 	return res, err
 }
 
-func getResultId(r []byte) (error, string) {
+func getResultID(r []byte) (string, error) {
 	result := &Resource{}
 	if err := json.Unmarshal(r, result); err != nil {
-		return err, ""
+		return "", err
 	}
-	return nil, result.UUID
+	return result.UUID, nil
 }
 
 type Resource struct {
