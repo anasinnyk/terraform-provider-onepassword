@@ -77,13 +77,21 @@ func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.UUID)
-	d.Set("name", v.Overview.Title)
+	if err := d.Set("name", v.Overview.Title); err != nil {
+		return err
+	}
 	if err := d.Set("url", v.Overview.URL); err != nil {
 		return err
 	}
-	d.Set("notes", v.Details.Notes)
-	d.Set("tags", v.Overview.Tags)
-	d.Set("vault", v.Vault)
+	if err := d.Set("notes", v.Details.Notes); err != nil {
+		return err
+	}
+	if err := d.Set("tags", v.Overview.Tags); err != nil {
+		return err
+	}
+	if err := d.Set("vault", v.Vault); err != nil {
+		return err
+	}
 	for _, field := range v.Details.Fields {
 		if field.Name == "username" {
 			d.Set("username", field.Value)

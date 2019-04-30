@@ -133,7 +133,7 @@ func (o *OnePassClient) ReadItem(id string, vaultID string) (*Item, error) {
 	if vaultID != "" {
 		args = append(args, fmt.Sprintf("--vault=%s", vaultID))
 	}
-	err, res := o.runCmd(args...)
+	res, err := o.runCmd(args...)
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +253,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	if v.Vault != "" {
 		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
 	}
-	err, res := o.runCmd(args...)
+	res, err := o.runCmd(args...)
 	if err == nil {
 		err, id := getResultId(res)
 		if err == nil {
@@ -264,7 +264,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 }
 
 func (o *OnePassClient) ReadDocument(id string) (string, error) {
-	err, content := o.runCmd(
+	content, err := o.runCmd(
 		opPasswordGet,
 		DocumentResource,
 		id,
@@ -285,7 +285,7 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
 	}
 
-	err, res := o.runCmd(args...)
+	res, err := o.runCmd(args...)
 	if err == nil {
 		err, id := getResultId(res)
 		if err == nil {

@@ -222,7 +222,7 @@ func gMutex() *sync.Mutex {
 	return &sync.Mutex{}
 }
 
-func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
+func (o *OnePassClient) runCmd(args ...string) ([]byte, error) {
 	args = append(args, fmt.Sprintf("--session=%s", o.Session))
 	gMutex().Lock()
 	cmd := exec.Command(o.PathToOp, args...)
@@ -231,7 +231,7 @@ func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	if err != nil {
 		err = fmt.Errorf("some error in command %v\nError: %s\nOutput: %s", args[:len(args)-1], err, res)
 	}
-	return err, res
+	return res, err
 }
 
 func getResultId(r []byte) (error, string) {
@@ -254,6 +254,6 @@ func getID(d *schema.ResourceData) string {
 }
 
 func (o *OnePassClient) Delete(resource string, id string) error {
-	err, _ := o.runCmd(opPasswordDelete, resource, id)
+	_, err := o.runCmd(opPasswordDelete, resource, id)
 	return err
 }

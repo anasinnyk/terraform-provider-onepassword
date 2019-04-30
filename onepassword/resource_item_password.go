@@ -72,14 +72,24 @@ func resourceItemPasswordRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.UUID)
-	d.Set("name", v.Overview.Title)
+	if err := d.Set("name", v.Overview.Title); err != nil {
+		return err
+	}
 	if err := d.Set("url", v.Overview.URL); err != nil {
 		return err
 	}
-	d.Set("notes", v.Details.Notes)
-	d.Set("tags", v.Overview.Tags)
-	d.Set("vault", v.Vault)
-	d.Set("password", v.Details.Password)
+	if err := d.Set("notes", v.Details.Notes); err != nil {
+		return err
+	}
+	if err := d.Set("tags", v.Overview.Tags); err != nil {
+		return err
+	}
+	if err := d.Set("vault", v.Vault); err != nil {
+		return err
+	}
+	if err := d.Set("password", v.Details.Password); err != nil {
+		return err
+	}
 	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 

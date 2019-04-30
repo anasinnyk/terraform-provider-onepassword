@@ -64,9 +64,15 @@ func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.UUID)
-	d.Set("name", v.Overview.Title)
-	d.Set("tags", v.Overview.Tags)
-	d.Set("vault", v.Vault)
+	if err := d.Set("name", v.Overview.Title); err != nil {
+		return err
+	}
+	if err := d.Set("tags", v.Overview.Tags); err != nil {
+		return err
+	}
+	if err := d.Set("vault", v.Vault); err != nil {
+		return err
+	}
 
 	content, err := m.onePassClient.ReadDocument(v.UUID); 
 	if err != nil {

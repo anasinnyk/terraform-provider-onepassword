@@ -60,10 +60,18 @@ func resourceItemSecureNoteRead(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	d.SetId(v.UUID)
-	d.Set("name", v.Overview.Title)
-	d.Set("tags", v.Overview.Tags)
-	d.Set("vault", v.Vault)
-	d.Set("notes", v.Details.Notes)
+	if err := d.Set("name", v.Overview.Title); err != nil {
+		return err
+	}
+	if err := d.Set("tags", v.Overview.Tags); err != nil {
+		return err
+	}
+	if err := d.Set("vault", v.Vault); err != nil {
+		return err
+	}
+	if err := d.Set("notes", v.Details.Notes); err != nil {
+		return err
+	}
 	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 

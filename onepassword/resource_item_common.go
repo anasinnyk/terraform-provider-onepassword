@@ -81,9 +81,15 @@ func resourceItemCommonRead(d *schema.ResourceData, meta interface{}) error {
 	if err := d.Set("notes", v.Details.Notes); err != nil {
 		return err
 	}
-	d.Set("tags", v.Overview.Tags)
-	d.Set("vault", v.Vault)
-	d.Set("template", string(Template2Category(v.Template)))
+	if err := d.Set("tags", v.Overview.Tags); err != nil {
+		return err
+	}
+	if err := d.Set("vault", v.Vault); err != nil {
+		return err
+	}
+	if err := d.Set("template", string(Template2Category(v.Template))); err != nil {
+		return err
+	}
 	return d.Set("section", ProcessSections(v.Details.Sections))
 }
 
