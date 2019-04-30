@@ -16,6 +16,3 @@ deploy:
   - terraform-provider-onepassword.linux.amd64
   on:
     tags: true
-branches:
-  only:
-  - master
