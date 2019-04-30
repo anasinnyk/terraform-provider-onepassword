@@ -5,7 +5,7 @@ before_install:
 - go get github.com/mitchellh/gox
 install: true
 script:
-- env GO111MODULE=on gox -os="linux darwin windows" -arch="amd64" -output="terraform-provider-onepassword.." -verbose ./...
+- env GO111MODULE=on gox -os="linux darwin windows" -arch="amd64" -output="terraform-provider-onepassword.{{.OS}}.{{.Arch}}" -verbose ./...
 deploy:
   provider: releases
   skip_cleanup: true
