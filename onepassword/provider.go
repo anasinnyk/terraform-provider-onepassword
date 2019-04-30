@@ -1,22 +1,22 @@
 package onepassword
 
 import (
-	"os"
-	"io"
+	"archive/zip"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
-	"sync"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
-	"os/exec"
-	"net/http"
-	"archive/zip"
-	"path/filepath"
-	"encoding/json"
+	"sync"
 
 	"github.com/Masterminds/semver"
-	"github.com/hashicorp/terraform/terraform"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -153,15 +153,14 @@ func installOPClient() (string, error) {
 		version = semVer.String()
 	}
 	binZip := fmt.Sprintf("/tmp/op_%s.zip", version)
-	url := fmt.Sprintf(
-		"https://cache.agilebits.com/dist/1P/op/pkg/v%s/op_%s_%s_v%s.zip",
-		version,
-		runtime.GOOS,
-		runtime.GOARCH,
-		version,
-	)
 	if _, err := os.Stat(binZip); os.IsNotExist(err) {
-		resp, err := http.Get(url)
+		resp, err := http.Get(fmt.Sprintf(
+			"https://cache.agilebits.com/dist/1P/op/pkg/v%s/op_%s_%s_v%s.zip",
+			version,
+			runtime.GOOS,
+			runtime.GOARCH,
+			version,
+		))
 		if err != nil {
 			return "", err
 		}
