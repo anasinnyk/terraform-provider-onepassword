@@ -41,7 +41,7 @@ func resourceItemDocument() *schema.Resource {
 			},
 			"file_name": {
 				Type:     schema.TypeString,
-				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"content": {
@@ -96,6 +96,11 @@ func resourceItemDocumentCreate(d *schema.ResourceData, meta interface{}) error 
 	if err != nil {
 		return err
 	}
+	content, err := m.onePassClient.ReadDocument(item.UUID)
+	if err != nil {
+		return err
+	}
+
 	d.SetId(item.UUID)
-	return nil
+	return d.Set("content", content)
 }

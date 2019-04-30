@@ -43,7 +43,7 @@ func resourceItemSecureNote() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				Elem:     sectionSchema,
+				Elem:     sectionSchema(),
 			},
 		},
 	}
