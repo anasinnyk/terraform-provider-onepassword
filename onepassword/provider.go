@@ -76,11 +76,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	return NewMeta(d)
 }
 
-const ONE_PASSWORD_COMMAND_CREATE = "create"
-const ONE_PASSWORD_COMMAND_DELETE = "delete"
-const ONE_PASSWORD_COMMAND_UPDATE = "update"
-const ONE_PASSWORD_COMMAND_GET = "get"
-const ONE_PASSWORD_COMMAND_ADD = "add"
+const opPasswordCreate = "create"
+const opPasswordDelete = "delete"
+const opPasswordGet = "get"
 
 type OnePassClient struct {
 	Password  string
@@ -98,52 +96,49 @@ type Meta struct {
 
 func NewMeta(d *schema.ResourceData) (*Meta, error) {
 	m := &Meta{data: d}
-	err, client := m.NewOnePassClient()
+	client, err := m.NewOnePassClient()
 	m.onePassClient = client
 	return m, err
 }
 
-func unzip(src string, dest string) ([]string, error) {
-	var filenames []string
-
+func unzip(src string, dest string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
-		return filenames, err
+		return err
 	}
 	defer r.Close()
 
 	for _, f := range r.File {
 		fpath := filepath.Join(dest, f.Name)
 		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return filenames, fmt.Errorf("%s: illegal file path", fpath)
+			return fmt.Errorf("%s: illegal file path", fpath)
 		}
-		filenames = append(filenames, fpath)
 		if f.FileInfo().IsDir() {
 			if err := os.MkdirAll(fpath, os.ModePerm); err != nil {
-				return filenames, err
+				return err
 			}
 			continue
 		}
 		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-			return filenames, err
+			return err
 		}
 		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			return filenames, err
+			return err
 		}
 		rc, err := f.Open()
 		if err != nil {
-			return filenames, err
+			return err
 		}
 		_, err = io.Copy(outFile, rc)
 		outFile.Close()
 		rc.Close()
 
 		if err != nil {
-			return filenames, err
+			return err
 		}
 	}
-	return filenames, nil
+	return nil
 }
 
 func installOPClient() (string, error) {
@@ -174,17 +169,17 @@ func installOPClient() (string, error) {
 		if _, err = io.Copy(out, resp.Body); err != nil {
 			return "", err
 		}
-		if _, err := unzip(binZip, "/tmp/terraform-provider-onepassword/"+version); err != nil {
+		if err := unzip(binZip, "/tmp/terraform-provider-onepassword/"+version); err != nil {
 			return "", err
 		}
 	}
 	return "/tmp/terraform-provider-onepassword/" + version + "/op", nil
 }
 
-func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
+func (m *Meta) NewOnePassClient() (*OnePassClient, error) {
 	bin, err := installOPClient()
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	op := &OnePassClient{
@@ -196,9 +191,9 @@ func (m *Meta) NewOnePassClient() (error, *OnePassClient) {
 		Session:   "",
 	}
 	if err := op.SignIn(); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, op
+	return op, nil
 }
 
 func (o *OnePassClient) SignIn() error {
@@ -223,13 +218,15 @@ func (o *OnePassClient) SignIn() error {
 	return nil
 }
 
-var m sync.Mutex
+func gMutex() *sync.Mutex {
+	return &sync.Mutex{}
+}
 
 func (o *OnePassClient) runCmd(args ...string) (error, []byte) {
 	args = append(args, fmt.Sprintf("--session=%s", o.Session))
-	m.Lock()
+	gMutex().Lock()
 	cmd := exec.Command(o.PathToOp, args...)
-	defer m.Unlock()
+	defer gMutex().Unlock()
 	res, err := cmd.CombinedOutput()
 	if err != nil {
 		err = fmt.Errorf("some error in command %v\nError: %s\nOutput: %s", args[:len(args)-1], err, res)
@@ -252,12 +249,11 @@ type Resource struct {
 func getID(d *schema.ResourceData) string {
 	if d.Id() != "" {
 		return d.Id()
-	} else {
-		return d.Get("name").(string)
 	}
+	return d.Get("name").(string)
 }
 
 func (o *OnePassClient) Delete(resource string, id string) error {
-	err, _ := o.runCmd(ONE_PASSWORD_COMMAND_DELETE, resource, id)
+	err, _ := o.runCmd(opPasswordDelete, resource, id)
 	return err
 }

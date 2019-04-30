@@ -13,7 +13,7 @@ type Vault struct {
 
 func (o *OnePassClient) ReadVault(id string) (*Vault, error) {
 	vault := &Vault{}
-	err, res := o.runCmd(ONE_PASSWORD_COMMAND_GET, VaultResource, id)
+	err, res := o.runCmd(opPasswordGet, VaultResource, id)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (o *OnePassClient) ReadVault(id string) (*Vault, error) {
 }
 
 func (o *OnePassClient) CreateVault(v *Vault) (*Vault, error) {
-	args := []string{ONE_PASSWORD_COMMAND_CREATE, VaultResource, v.Name}
+	args := []string{opPasswordCreate, VaultResource, v.Name}
 	err, res := o.runCmd(args...)
 	if err != nil {
 		return nil, err

@@ -72,7 +72,7 @@ func resourceItemSoftwareLicense() *schema.Resource {
 func resourceItemSoftwareLicenseRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
+	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}

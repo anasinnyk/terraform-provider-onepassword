@@ -55,7 +55,7 @@ func resourceItemDocument() *schema.Resource {
 func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
-	err, v := m.onePassClient.ReadItem(getID(d), vaultID)
+	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("tags", v.Overview.Tags)
 	d.Set("vault", v.Vault)
 
-	err, content := m.onePassClient.ReadDocument(v.UUID); 
+	content, err := m.onePassClient.ReadDocument(v.UUID); 
 	if err != nil {
 		return err
 	}

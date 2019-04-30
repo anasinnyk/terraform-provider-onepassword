@@ -1,12 +1,12 @@
 package onepassword
 
 import (
-	"crypto/rand"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
-	"net/url"
 	"regexp"
 	"strings"
+	"net/url"
+	"crypto/rand"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func emailValidate(i interface{}, k string) (s []string, es []error) {

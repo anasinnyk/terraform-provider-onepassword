@@ -122,10 +122,10 @@ type Overview struct {
 	Tags  []string `json:"tags"`
 }
 
-func (o *OnePassClient) ReadItem(id string, vaultID string) (error, *Item) {
+func (o *OnePassClient) ReadItem(id string, vaultID string) (*Item, error) {
 	item := &Item{}
 	args := []string{
-		ONE_PASSWORD_COMMAND_GET,
+		opPasswordGet,
 		ItemResource,
 		id,
 	}
@@ -135,12 +135,12 @@ func (o *OnePassClient) ReadItem(id string, vaultID string) (error, *Item) {
 	}
 	err, res := o.runCmd(args...)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	if err = json.Unmarshal(res, item); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, item
+	return item, nil
 }
 
 func Category2Template(c Category) string {
@@ -234,14 +234,14 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	if err != nil {
 		return err
 	}
-	detailsHash := base64url.Encode([]byte(details))
+	detailsHash := base64url.Encode(details)
 	template := Template2Category(v.Template)
 	if template == UnknownCategory {
 		return errors.New("unknown template id " + v.Template)
 	}
 
 	args := []string{
-		ONE_PASSWORD_COMMAND_CREATE,
+		opPasswordCreate,
 		ItemResource,
 		string(template),
 		detailsHash,
@@ -263,18 +263,18 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	return err
 }
 
-func (o *OnePassClient) ReadDocument(id string) (error, string) {
+func (o *OnePassClient) ReadDocument(id string) (string, error) {
 	err, content := o.runCmd(
-		ONE_PASSWORD_COMMAND_GET,
+		opPasswordGet,
 		DocumentResource,
 		id,
 	)
-	return err, string(content)
+	return string(content), err
 }
 
 func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 	args := []string{
-		ONE_PASSWORD_COMMAND_CREATE,
+		opPasswordCreate,
 		DocumentResource,
 		filePath,
 		fmt.Sprintf("--title=%s", v.Overview.Title),
