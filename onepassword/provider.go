@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -120,7 +121,9 @@ func unzip(src string, dest string) ([]string, error) {
 		}
 		filenames = append(filenames, fpath)
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, os.ModePerm)
+			if err := os.MkdirAll(fpath, os.ModePerm); err != nil {
+				return filenames, err
+			}
 			continue
 		}
 		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
@@ -202,7 +205,9 @@ func (o *OnePassClient) SignIn() error {
 	}
 	go func() {
 		defer stdin.Close()
-		io.WriteString(stdin, fmt.Sprintf("%s\n", o.Password))
+		if _, err := io.WriteString(stdin, fmt.Sprintf("%s\n", o.Password)); err != nil {
+			log.Println("[ERROR] ", err)
+		}
 	}()
 
 	session, err := cmd.CombinedOutput()

@@ -335,7 +335,6 @@ func ProcessField(srcFields []SectionField) []map[string]interface{} {
 		}
 		f[key] = field.Value
 		fields = append(fields, f)
-		f = map[string]interface{}{}
 	}
 	return fields
 }
