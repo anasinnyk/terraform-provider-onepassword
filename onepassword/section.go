@@ -8,7 +8,7 @@ import (
 )
 
 func sectionSchema() *schema.Resource {
-	return  &schema.Resource{
+	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,

@@ -74,7 +74,7 @@ func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	content, err := m.onePassClient.ReadDocument(v.UUID); 
+	content, err := m.onePassClient.ReadDocument(v.UUID)
 	if err != nil {
 		return err
 	}

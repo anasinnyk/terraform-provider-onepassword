@@ -1,12 +1,12 @@
 package onepassword
 
 import (
-	"fmt"
-	"errors"
-	"strings"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/kalaspuffar/base64url"
+	"strings"
 )
 
 const ItemResource = "item"

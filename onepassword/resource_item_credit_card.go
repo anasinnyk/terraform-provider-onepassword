@@ -57,9 +57,9 @@ func resourceItemCreditCard() *schema.Resource {
 							ForceNew: true,
 						},
 						"type": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ForceNew:     true,
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
 							ValidateFunc: orEmpty(validation.StringInSlice([]string{
 								"mc",
 								"visa",

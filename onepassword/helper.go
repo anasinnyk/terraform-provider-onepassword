@@ -1,12 +1,12 @@
 package onepassword
 
 import (
+	"crypto/rand"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
+	"net/url"
 	"regexp"
 	"strings"
-	"net/url"
-	"crypto/rand"
-	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func emailValidate(i interface{}, k string) (s []string, es []error) {
@@ -17,7 +17,7 @@ func emailValidate(i interface{}, k string) (s []string, es []error) {
 	}
 	emailRegexp := regexp.MustCompile(
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}" +
-		"[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+			"[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
 	)
 	if !emailRegexp.MatchString(v) {
 		es = append(es, fmt.Errorf("%s is not email", k))
