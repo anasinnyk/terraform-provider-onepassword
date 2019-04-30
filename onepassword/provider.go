@@ -152,7 +152,13 @@ func installOPClient() (string, error) {
 		version = os.Getenv("OP_VERSION")
 	}
 	binZip := fmt.Sprintf("/tmp/op_%s.zip", version)
-	url := fmt.Sprintf("https://cache.agilebits.com/dist/1P/op/pkg/%s/op_%s_%s_%s.zip", version, runtime.GOOS, runtime.GOARCH, version)
+	url := fmt.Sprintf(
+		"https://cache.agilebits.com/dist/1P/op/pkg/%s/op_%s_%s_%s.zip",
+		version,
+		runtime.GOOS,
+		runtime.GOARCH,
+		version,
+	)
 	if _, err := os.Stat(binZip); os.IsNotExist(err) {
 		resp, err := http.Get(url)
 		if err != nil {

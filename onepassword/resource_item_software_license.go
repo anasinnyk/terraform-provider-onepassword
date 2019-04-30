@@ -55,7 +55,7 @@ func resourceItemSoftwareLicense() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
-						"field": sectionSchema.Schema["field"],
+						"field": sectionSchema().Schema["field"],
 					},
 				},
 			},
@@ -63,7 +63,7 @@ func resourceItemSoftwareLicense() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				Elem:     sectionSchema,
+				Elem:     sectionSchema(),
 			},
 		},
 	}

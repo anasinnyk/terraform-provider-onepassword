@@ -15,7 +15,10 @@ func emailValidate(i interface{}, k string) (s []string, es []error) {
 		es = append(es, fmt.Errorf("expected type of %s to be string", k))
 		return
 	}
-	emailRegexp := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	emailRegexp := regexp.MustCompile(
+		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}" +
+		"[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+	)
 	if !emailRegexp.MatchString(v) {
 		es = append(es, fmt.Errorf("%s is not email", k))
 		return

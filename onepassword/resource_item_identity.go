@@ -7,7 +7,7 @@ import (
 )
 
 func resourceItemIdentity() *schema.Resource {
-	addressSchema := sectionSchema.Schema["field"].Elem.(*schema.Resource).Schema["address"]
+	addressSchema := sectionSchema().Schema["field"].Elem.(*schema.Resource).Schema["address"]
 	addressSchema.ConflictsWith = []string{}
 
 	return &schema.Resource{
@@ -101,7 +101,7 @@ func resourceItemIdentity() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
-						"field": sectionSchema.Schema["field"],
+						"field": sectionSchema().Schema["field"],
 					},
 				},
 			},
@@ -139,7 +139,7 @@ func resourceItemIdentity() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
-						"field": sectionSchema.Schema["field"],
+						"field": sectionSchema().Schema["field"],
 					},
 				},
 			},
@@ -167,7 +167,7 @@ func resourceItemIdentity() *schema.Resource {
 							ForceNew:     true,
 							ValidateFunc: emailValidate,
 						},
-						"field": sectionSchema.Schema["field"],
+						"field": sectionSchema().Schema["field"],
 					},
 				},
 			},
@@ -175,7 +175,7 @@ func resourceItemIdentity() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				Elem:     sectionSchema,
+				Elem:     sectionSchema(),
 			},
 		},
 	}
