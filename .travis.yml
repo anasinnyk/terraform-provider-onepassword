@@ -1,0 +1,21 @@
+language: go
+dist: trusty
+sudo: false
+before_install:
+- go get github.com/mitchellh/gox
+install: true
+script:
+- env GO111MODULE=on gox -os="linux darwin windows" -arch="amd64" -output="terraform-provider-onepassword.." -verbose ./...
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GITHUB_OAUTH_TOKEN
+  file:
+  - terraform-provider-onepassword.windows.amd64.exe
+  - terraform-provider-onepassword.darwin.amd64
+  - terraform-provider-onepassword.linux.amd64
+  on:
+    tags: true
+branches:
+  only:
+  - master
