@@ -40,7 +40,7 @@ The 1Password provider store your secret data in secure vaults.
 
 ## Authentication
 
-There are generally two ways to configure the Helm provider.
+There are generally two ways to configure the 1Password provider.
 
 ### Environment variables
 
