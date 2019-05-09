@@ -3,6 +3,7 @@ package onepassword
 import (
 	"archive/zip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -24,19 +25,19 @@ func Provider() terraform.ResourceProvider {
 		Schema: map[string]*schema.Schema{
 			"email": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_EMAIL", nil),
 				Description: "Set account email address",
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_PASSWORD", nil),
 				Description: "Set account password",
 			},
 			"secret_key": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_SECRET_KEY", nil),
 				Description: "Set account secret key",
 			},
@@ -222,7 +223,7 @@ func (o *OnePassClient) SignIn() error {
 
 	session, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("Cannot signin: %s", err))
 	}
 
 	o.Session = string(session)
