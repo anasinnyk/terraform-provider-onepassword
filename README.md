@@ -7,15 +7,15 @@
 
 [Provider](#Provider)
 
-[onepassword_vault](#onepassword_vault)
-[onepassword_item_common](#onepassword_item_common)
-[onepassword_item_document](#onepassword_item_document)
-[onepassword_item_identity](#onepassword_item_identity)
-[onepassword_item_login](#onepassword_item_login)
-[onepassword_item_password](#onepassword_item_password)
-[onepassword_item_secure_note](#onepassword_item_secure_note)
-[onepassword_item_software_license](#onepassword_item_software_license)
-[onepassword_item_credit_card](#onepassword_item_credit_card)
+* [onepassword_vault](#onepassword_vault)
+* [onepassword_item_common](#onepassword_item_common)
+* [onepassword_item_document](#onepassword_item_document)
+* [onepassword_item_identity](#onepassword_item_identity)
+* [onepassword_item_login](#onepassword_item_login)
+* [onepassword_item_password](#onepassword_item_password)
+* [onepassword_item_secure_note](#onepassword_item_secure_note)
+* [onepassword_item_software_license](#onepassword_item_software_license)
+* [onepassword_item_credit_card](#onepassword_item_credit_card)
 
 ## Provider
 
