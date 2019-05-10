@@ -31,7 +31,7 @@
 
 ## Provider
 
-Terraform provider for 1password usage with your infrastructure, for example you can share password from your admin panel via some vault in you 1password company account
+Terraform provider for 1password usage with your infrastructure, for example you can share password from your admin panel via some vault in you 1password company account. This provider based on 1Password CLI client version 0.5.5, but you can rewrite it by env variable `OP_VERSION`
 
 ### Example Usage
 
@@ -57,6 +57,20 @@ The following arguments are supported:
 
 ### onepassword_vault
 
+This resource create new vault in your 1password account.
+
+#### Example Usage
+
+```
+resource "onepassword_vault" "this" {
+    name = "new-vault"
+}
+```
+
+#### Argument Reference
+
+* `name` - (Required) vault name
+
 ### onepassword_item_common
 
 ### onepassword_item_document
@@ -76,6 +90,20 @@ The following arguments are supported:
 ## Data Sources
 
 ### onepassword_vault
+
+Load your exsit vault by name from your 1password account.
+
+#### Example Usage
+
+```
+data "onepassword_vault" "this" {
+    name = "exist-vault"
+}
+```
+
+#### Argument Reference
+
+* `name` - (Required) vault name
 
 ### onepassword_item_common
 
