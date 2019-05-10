@@ -65,7 +65,12 @@ data "onepassword_vault" "this" {
 
 ### Argument Reference
 
-* `name` - (Required) vault name
+* `name` - (Required) vault name.
+
+### Attribute Reference
+
+* `id` - (Required) vault id.
+Note: all arguments.
 
 ### onepassword_item_common
 
@@ -145,33 +150,47 @@ resource "onepassword_item_common" "this" {
 
 ### Argument Reference
 
-* `name` - (Required)
-* `template` - (Required)
-* `vault` - (Optional)
-* `section` - (Optional)
+* `name` - (Required) your item title.
+* `template` - (Required) your item categoty. Can be one of the next value `Database`, `Membership`, `Wireless Router`, `Driver License`, `Outdoor License`, `Passport`, `Email Account`, `Reward Program`, `Social Security Number`, `Bank Account`, `Server`.
+* `vault` - (Optional) link to your vault, can be id (recommended) or name. If it's empty, it creates to default vault.
+* `section` - (Optional) it's a block with additional information available in any other item type.
 
 The `section` block support:
 
-* `name` - (Optional)
-* `field` - (Optional)
+* `name` - (Optional) section title.
+* `field` - (Optional) field in section.
 
 The `field` block support:
 
-* `name` - (Optional)
-* `string` - (Optional)
-* `url` - (Optional)
-* `phone` - (Optional)
-* `email` - (Optional)
-* `date` - (Optional)
-* `month_year` - (Optional)
-* `totp` - (Optional)
-* `concealed` - (Optional)
-* `address` - (Optional)
-* `sex` - (Optional)
-* `card_type` - (Optional)
-* `reference` - (Optional)
+* `name` - (Optional) field title.
+* `string` - (Optional) if you have a text field use string.
+* `url` - (Optional) if you have a URL field type (checks if URL is correct).
+* `phone` - (Optional) if you have a phone number filed type.
+* `email` - (Optional) if you have a email field type.
+* `date` - (Optional) if you have a date field type should use a UNIXTIME.
+* `month_year` - (Optional) if you have a month year field type, credit card expiration for example, use 6 number in next format `YYYYMM`.
+* `totp` - (Optional) if you have a one time password you can save url in this type and 1password client can generate totp for you.
+* `concealed` - (Optional) if you have a sensitive infromation, you can save it in this field type, it looks like a password.
+* `sex` - (Optional) text field with information about geander, possible next vaules `male`,`female`.
+* `card_type` - (Optional) text field with information about credit card type, possible next vaules `mc`, `visa`, `amex`, `diners`, `carteblanche`, `discover`, `jcb`, `maestro`, `visaelectron`, `laser`, `unionpay`.
+* `reference` - (Optional) not supported yet. Potentially we can store reference between different items.
+* `address` - (Optional) it a address block.
 
 Note: MUST be one of there `string`,`url`,`phone`,`email`,`date`,`month_year`,`totp`,`concealed`,`address`,`sex`,`card_type`,`reference`.
+
+The `address` block support:
+
+* `street` - (Optional) street information.
+* `counrty` - (Optional) ISO2 country code.
+* `state` - (Optional) state name.
+* `region` - (Optional) region name.
+* `city` - (Optional) city name.
+* `zip` - (Optional) zip code.
+
+### Attribute Reference
+
+* `id` - (Required) item id.
+Note: all arguments.
 
 ### onepassword_item_document
 
