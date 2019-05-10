@@ -70,9 +70,10 @@ data "onepassword_vault" "this" {
 ### Attribute Reference
 
 * `id` - (Required) vault id.
-Note: all arguments.
 
-### onepassword_item_common
+*Note: and all from arguments.*
+
+## onepassword_item_common
 
 This resource can create/load any other item without required fields like Database/Membership/Wireless Router/Driver License/Outdoor License/Passport/Email Account/Reward Program/Social Security Number/Bank Account/Server in your 1password account.
 
@@ -153,6 +154,8 @@ resource "onepassword_item_common" "this" {
 * `name` - (Required) your item title.
 * `template` - (Required) your item categoty. Can be one of the next value `Database`, `Membership`, `Wireless Router`, `Driver License`, `Outdoor License`, `Passport`, `Email Account`, `Reward Program`, `Social Security Number`, `Bank Account`, `Server`.
 * `vault` - (Optional) link to your vault, can be id (recommended) or name. If it's empty, it creates to default vault.
+* `notes` - (Optional) note for this item.
+* `tags` - (Optional) array of strings with any tag, for grouping your 1password item.
 * `section` - (Optional) it's a block with additional information available in any other item type.
 
 The `section` block support:
@@ -174,9 +177,9 @@ The `field` block support:
 * `sex` - (Optional) text field with information about geander, possible next vaules `male`,`female`.
 * `card_type` - (Optional) text field with information about credit card type, possible next vaules `mc`, `visa`, `amex`, `diners`, `carteblanche`, `discover`, `jcb`, `maestro`, `visaelectron`, `laser`, `unionpay`.
 * `reference` - (Optional) not supported yet. Potentially we can store reference between different items.
-* `address` - (Optional) it a address block.
+* `address` - (Optional) it's a address block.
 
-Note: MUST be one of there `string`,`url`,`phone`,`email`,`date`,`month_year`,`totp`,`concealed`,`address`,`sex`,`card_type`,`reference`.
+*Note: MUST be one of there `string`,`url`,`phone`,`email`,`date`,`month_year`,`totp`,`concealed`,`address`,`sex`,`card_type`,`reference`.*
 
 The `address` block support:
 
@@ -190,18 +193,361 @@ The `address` block support:
 ### Attribute Reference
 
 * `id` - (Required) item id.
-Note: all arguments.
 
-### onepassword_item_document
+*Note: and all from arguments.*
 
-### onepassword_item_identity
+## onepassword_item_document
 
-### onepassword_item_login
+This resource can create/load any document for/from 1password.
 
-### onepassword_item_password
+### Example Usage
 
-### onepassword_item_secure_note
+#### Resource
 
-### onepassword_item_software_license
+```hcl
+resource "onepassword_item_document" "this" {
+  name      = "document-name"
+  vault     = "${var.vault_id}"
+  file_path = "${path.module}/test.txt"
+}
+```
 
-### onepassword_item_credit_card
+#### Data Source
+
+```hcl
+resource "onepassword_item_document" "this" {
+    name = "some-document-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your document title.
+* `field_path` - (Required) path to your document, which will be upload to 1password.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+### Attribute Reference
+
+* `id` - (Required) document id.
+* `content` - (Optional) document content.
+
+*Note: and all from arguments.*
+
+## onepassword_item_identity
+
+This resource can create/load any identity for/from 1password.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_identity" "this" {
+  name  = "Andrii Nasinnyk"
+  vault = "${var.vault_id}"
+
+  identification = {
+    firstname  = "Andrii"
+    initial    = "AN#24"
+    lastname   = "Nasinnyk"
+    sex        = "male"
+    birth_date = 575553660         //unix-time
+    occupation = "Play Basketball"
+    company    = "HarshPhil"
+    department = "Guards"
+    job_title  = "Point Guard"
+  }
+
+  address = {
+    address = {
+      city    = "Kyiv"
+      street  = "11 Line"
+      country = "ua"
+      zip     = "46000"
+      region  = "Dniprovskii"
+      state   = "Kyiv"
+    }
+
+    default_phone  = "+38 (000) 000 0000"
+    home_phone     = "+38 (000) 000 0000"
+    cell_phone     = "+38 (000) 000 0000"
+    business_phone = "+38 (000) 000 0000"
+  }
+
+  internet = {
+    username = "anasinnyk"
+    email    = "andriy.nas@gmail.com"
+  }
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_identity" "this" {
+    name = "some-identity-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your identity title.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+* `identification` - (Optional)
+* `address` - (Optional)
+* `internet` - (Optional)
+
+The `identification` block support:
+
+* `firstname` - (Optional)
+* `initial` - (Optional)
+* `lastname` - (Optional)
+* `sex` - (Optional)
+* `birth_date` - (Optional)
+* `occupation` - (Optional)
+* `company` - (Optional)
+* `department` - (Optional)
+* `job_title` - (Optional)
+
+The `address` block support:
+
+* `address` - (Optional)
+* `default_phone` - (Optional)
+* `home_phone` - (Optional)
+* `cell_phone` - (Optional)
+* `business_phone` - (Optional)
+
+The `internet` block support:
+
+* `username` - (Optional)
+* `email` - (Optional)
+
+### Attribute Reference
+
+* `id` - (Required) identity id.
+
+*Note: and all from arguments.*
+
+## onepassword_item_login
+
+This resource can create/load any login for/from 1password.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_login" "this" {
+  name     = "login-title"
+  username = "some-user-name"
+  password = "123456qQ"
+  url      = "https://example.com"
+  vault    = "${var.vault_id}"
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_login" "this" {
+    name = "some-login-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your login title.
+* `username` - (Optional) from this login.
+* `password` - (Optional) from this login.
+* `url` - (Optional) url for website from this login.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+### Attribute Reference
+
+* `id` - (Required) login id.
+
+*Note: and all from arguments.*
+
+## onepassword_item_password
+
+This resource can create/load any password for/from 1password.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_password" "this" {
+  name     = "login-title"
+  password = "123456qQ"
+  url      = "https://example.com"
+  vault    = "${var.vault_id}"
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_password" "this" {
+    name = "some-password-from-vault"
+}
+```
+### Argument Reference
+
+* `name` - (Required) your password title.
+* `password` - (Optional) store password here.
+* `url` - (Optional) url for website from this password.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+### Attribute Reference
+
+* `id` - (Required) password id.
+
+*Note: and all from arguments.*
+
+## onepassword_item_secure_note
+
+This resource can create/load any secure note for/from 1password.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_secure_note" "this" {
+  name  = "secure-note-title"
+  notes = <<<TEXT
+    some multi line 
+    secret 
+    text
+  >>>
+  vault = "${var.vault_id}"
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_secure_note" "this" {
+    name = "some-secure-note-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your secure note title.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `notes` - (Optional) see details in onepassword_item_common (main field for this type).
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+### Attribute Reference
+
+* `id` - (Required) secure note id.
+
+*Note: and all from arguments.*
+
+## onepassword_item_software_license
+
+This resource can create/load any software license for/from 1password.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_software_license" "this" {
+  name        = "software-license-title"
+  vault       = "${var.vault_id}"
+  license_key = "SOME-SECURE-SOWTWARE-LICENSE-KEY"
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_software_license" "this" {
+    name = "software-license-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your software license title.
+* `license_key` - (Optional) store your license key here.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+### Attribute Reference
+
+* `id` - (Required) software license id.
+
+*Note: and all from arguments.*
+
+## onepassword_item_credit_card
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_credit_card" "this" {
+  name  = "Default Visa"
+  vault = "${var.vault_id}"
+
+  main = {
+    cardholder  = "John Smith"
+    type        = "visa"
+    number      = "4111 1111 1111 1111"
+    cvv         = "1111"
+    expiry_date = 202205
+    valid_from  = 201805
+  }
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_credit_card" "this" {
+    name = "credit_card-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) your credit card title.
+* `vault` - (Optional) see details in onepassword_item_common.
+* `main` - (Optional) block of card data.
+* `notes` - (Optional) see details in onepassword_item_common.
+* `tags` - (Optional) see details in onepassword_item_common.
+* `section` - (Optional) see details in onepassword_item_common.
+
+The `main` block support:
+
+* `cardholder` - (Optional) store card holder name.
+* `type` - (Optional) store card type value. see details in onepassword_item_common -> section -> field type card_type.
+* `number` - (Optional) store 16 digit card numner.
+* `cvv` - (Optional) sensitive data with your cvv card code.
+* `expiry_date` - (Optional) store your exprite date in month year format. see details in onepassword_item_common -> section -> field type card_type
+* `valid_from` - (Optional) store date when your card was publish in month year format. see details in onepassword_item_common -> section -> field type card_type
+
+### Attribute Reference
+
+* `id` - (Required) credit card id.
+
+*Note: and all from arguments.*

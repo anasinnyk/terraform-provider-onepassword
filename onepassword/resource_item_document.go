@@ -39,11 +39,6 @@ func resourceItemDocument() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
-			"file_name": {
-				Type:     schema.TypeString,
-				ForceNew: true,
-				Optional: true,
-			},
 			"content": {
 				Type:     schema.TypeString,
 				Computed: true,
