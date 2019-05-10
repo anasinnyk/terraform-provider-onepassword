@@ -7,27 +7,15 @@
 
 [Provider](#Provider)
 
-[Resources](#Resources)
-* [onepassword_vault](#onepassword_vault)
-* [onepassword_item_common](#onepassword_item_common)
-* [onepassword_item_document](#onepassword_item_document)
-* [onepassword_item_identity](#onepassword_item_identity)
-* [onepassword_item_login](#onepassword_item_login)
-* [onepassword_item_password](#onepassword_item_password)
-* [onepassword_item_secure_note](#onepassword_item_secure_note)
-* [onepassword_item_software_license](#onepassword_item_software_license)
-* [onepassword_item_credit_card](#onepassword_item_credit_card)
-
-[Data Sources](#data-sources)
-* [onepassword_vault](#onepassword_vault-1)
-* [onepassword_item_common](#onepassword_item_common-1)
-* [onepassword_item_document](#onepassword_item_document-1)
-* [onepassword_item_identity](#onepassword_item_identity-1)
-* [onepassword_item_login](#onepassword_item_login-1)
-* [onepassword_item_password](#onepassword_item_password-1)
-* [onepassword_item_secure_note](#onepassword_item_secure_note-1)
-* [onepassword_item_software_license](#onepassword_item_software_license-1)
-* [onepassword_item_credit_card](#onepassword_item_credit_card-1)
+[onepassword_vault](#onepassword_vault)
+[onepassword_item_common](#onepassword_item_common)
+[onepassword_item_document](#onepassword_item_document)
+[onepassword_item_identity](#onepassword_item_identity)
+[onepassword_item_login](#onepassword_item_login)
+[onepassword_item_password](#onepassword_item_password)
+[onepassword_item_secure_note](#onepassword_item_secure_note)
+[onepassword_item_software_license](#onepassword_item_software_license)
+[onepassword_item_credit_card](#onepassword_item_credit_card)
 
 ## Provider
 
@@ -35,10 +23,10 @@ Terraform provider for 1password usage with your infrastructure, for example you
 
 ### Example Usage
 
-```
+```hcl
 provider "onepassword" {
-    email      = "john.smith@example.com",
-    password   = "super secret master password",
+    email      = "john.smith@example.com"
+    password   = "super secret master password"
     secret_key = "A3-XXXXXX-XXXXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
     sumdomain  = "company"
 }
@@ -53,59 +41,137 @@ The following arguments are supported:
 * `secret_key` - (Required) secret key which you can download after registration or via env variable `OP_SECRET_KEY`.
 * `subdomain` - (Optional) If you use corporate account you must fill subdomain form your 1password site. Defaults to `my` or via env variable `OP_SUBDOMAIN`.
 
-## Resources
+## onepassword_vault
 
-### onepassword_vault
+This resource create/load vault in your 1password account.
 
-This resource create new vault in your 1password account.
+### Example Usage
 
-#### Example Usage
+#### Resource
 
-```
+```hcl
 resource "onepassword_vault" "this" {
     name = "new-vault"
 }
 ```
 
-#### Argument Reference
+#### Data Source
 
-* `name` - (Required) vault name
-
-### onepassword_item_common
-
-### onepassword_item_document
-
-### onepassword_item_identity
-
-### onepassword_item_login
-
-### onepassword_item_password
-
-### onepassword_item_secure_note
-
-### onepassword_item_software_license
-
-### onepassword_item_credit_card
-
-## Data Sources
-
-### onepassword_vault
-
-Load your exsit vault by name from your 1password account.
-
-#### Example Usage
-
-```
+```hcl
 data "onepassword_vault" "this" {
     name = "exist-vault"
 }
 ```
 
-#### Argument Reference
+### Argument Reference
 
 * `name` - (Required) vault name
 
 ### onepassword_item_common
+
+This resource can create/load any other item without required fields like Database/Membership/Wireless Router/Driver License/Outdoor License/Passport/Email Account/Reward Program/Social Security Number/Bank Account/Server in your 1password account.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_item_common" "this" {
+  name  = "Coupone"
+  vault = "${var.vault_id}"
+
+  template = "Reward Program"
+
+  section = {
+    field = {
+      name   = "company name"
+      string = "MacPaw"
+    }
+
+    field = {
+      name   = "member name"
+      string = "anasinnyk"
+    }
+
+    field = {
+      name   = "member ID"
+      string = "123"
+    }
+
+    field = {
+      name      = "PIN"
+      concealed = "123456qQ"
+    }
+  }
+
+  section = {
+    name = "More Information"
+
+    field = {
+      name   = "member ID (additional)"
+      string = "321"
+    }
+
+    field = {
+      name  = "customer service phone"
+      phone = "+38 (000) 000 0000"
+    }
+
+    field = {
+      name  = "phone for reserva​tions"
+      phone = "+38 (000) 000 0000"
+    }
+
+    field = {
+      name = "website"
+      url  = "https://groupon.com"
+    }
+
+    field = {
+      name       = "member since"
+      month_year = 201903
+    }
+  }
+}
+```
+
+#### Data Source
+
+```hcl
+resource "onepassword_item_common" "this" {
+    name = "some-element-from-vault"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required)
+* `template` - (Required)
+* `vault` - (Optional)
+* `section` - (Optional)
+
+The `section` block support:
+
+* `name` - (Optional)
+* `field` - (Optional)
+
+The `field` block support:
+
+* `name` - (Optional)
+* `string` - (Optional)
+* `url` - (Optional)
+* `phone` - (Optional)
+* `email` - (Optional)
+* `date` - (Optional)
+* `month_year` - (Optional)
+* `totp` - (Optional)
+* `concealed` - (Optional)
+* `address` - (Optional)
+* `sex` - (Optional)
+* `card_type` - (Optional)
+* `reference` - (Optional)
+
+Note: MUST be one of there `string`,`url`,`phone`,`email`,`date`,`month_year`,`totp`,`concealed`,`address`,`sex`,`card_type`,`reference`.
 
 ### onepassword_item_document
 
