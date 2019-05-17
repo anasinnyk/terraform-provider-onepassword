@@ -28,7 +28,7 @@ provider "onepassword" {
     email      = "john.smith@example.com"
     password   = "super secret master password"
     secret_key = "A3-XXXXXX-XXXXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-    sumdomain  = "company"
+    subdomain  = "company"
 }
 ```
 
