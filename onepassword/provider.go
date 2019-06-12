@@ -25,19 +25,19 @@ func Provider() terraform.ResourceProvider {
 		Schema: map[string]*schema.Schema{
 			"email": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_EMAIL", nil),
 				Description: "Set account email address",
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_PASSWORD", nil),
 				Description: "Set account password",
 			},
 			"secret_key": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OP_SECRET_KEY", nil),
 				Description: "Set account secret key",
 			},
@@ -193,14 +193,37 @@ func (m *Meta) NewOnePassClient() (*OnePassClient, error) {
 		return nil, err
 	}
 
+	subdomain := m.data.Get("subdomain").(string)
+	email := m.data.Get("email").(string)
+	password := m.data.Get("password").(string)
+	secretKey := m.data.Get("secret_key").(string)
+	session := ""
+
+	if email == "" || password == "" || secretKey == "" {
+		email = ""
+		password = ""
+		secretKey = ""
+		sessionKeyName := "OP_SESSION_" + subdomain
+		session = os.Getenv(sessionKeyName)
+
+		if session == "" {
+			return nil, fmt.Errorf("email, password or secret_key is empty and environment variable %s is not set",
+				sessionKeyName)
+		}
+	}
+
 	op := &OnePassClient{
-		Email:     m.data.Get("email").(string),
-		Password:  m.data.Get("password").(string),
-		SecretKey: m.data.Get("secret_key").(string),
-		Subdomain: m.data.Get("subdomain").(string),
+		Email:     email,
+		Password:  password,
+		SecretKey: secretKey,
+		Subdomain: subdomain,
 		PathToOp:  bin,
-		Session:   "",
+		Session:   session,
 		mutex:     &sync.Mutex{},
+	}
+
+	if session != "" {
+		return op, nil
 	}
 	if err := op.SignIn(); err != nil {
 		return nil, err
