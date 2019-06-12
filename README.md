@@ -152,7 +152,7 @@ resource "onepassword_item_common" "this" {
 ### Argument Reference
 
 * `name` - (Required) your item title.
-* `template` - (Required) your item categoty. Can be one of the next value `Database`, `Membership`, `Wireless Router`, `Driver License`, `Outdoor License`, `Passport`, `Email Account`, `Reward Program`, `Social Security Number`, `Bank Account`, `Server`.
+* `template` - (Required) your item category. Can be one of the next value `Database`, `Membership`, `Wireless Router`, `Driver License`, `Outdoor License`, `Passport`, `Email Account`, `Reward Program`, `Social Security Number`, `Bank Account`, `Server`.
 * `vault` - (Optional) link to your vault, can be id (recommended) or name. If it's empty, it creates to default vault.
 * `notes` - (Optional) note for this item.
 * `tags` - (Optional) array of strings with any tag, for grouping your 1password item.
