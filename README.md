@@ -36,10 +36,12 @@ provider "onepassword" {
 
 The following arguments are supported:
 
-* `email` - (Required) your email address in 1password or via env variable `OP_EMAIL`.
-* `password` - (Required) your master password from 1password or via env variable `OP_PASSWORD`.
-* `secret_key` - (Required) secret key which you can download after registration or via env variable `OP_SECRET_KEY`.
+* `email` - (Optional) your email address in 1password or via env variable `OP_EMAIL`.
+* `password` - (Optional) your master password from 1password or via env variable `OP_PASSWORD`.
+* `secret_key` - (Optional) secret key which you can download after registration or via env variable `OP_SECRET_KEY`.
 * `subdomain` - (Optional) If you use corporate account you must fill subdomain form your 1password site. Defaults to `my` or via env variable `OP_SUBDOMAIN`.
+
+If `email`, `password` and `secret_key` is not set through the arguments or env variables, then the env variable `OP_SESSION_<subdomain>` is checked for existence. If set it will be assumed to be a valid session token and used while executing the `op` commands.
 
 ## onepassword_vault
 
@@ -429,8 +431,8 @@ This resource can create/load any secure note for/from 1password.
 resource "onepassword_item_secure_note" "this" {
   name  = "secure-note-title"
   notes = <<<TEXT
-    some multi line 
-    secret 
+    some multi line
+    secret
     text
   >>>
   vault = "${var.vault_id}"
