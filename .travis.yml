@@ -1,18 +1,21 @@
 language: go
 dist: trusty
 sudo: false
-before_install:
-- go get github.com/mitchellh/gox
+env:
+- OS=linux ARCH=amd64
+- OS=windows ARCH=amd64
+- OS=darwin ARCH=amd64
 install: true
 script:
-- env GO111MODULE=on gox -os="linux darwin windows" -arch="amd64" -output="terraform-provider-onepassword.{{.OS}}.{{.Arch}}" -verbose ./...
+- env GO111MODULE=on go build -ldflags "-X main.versionNumber=$TRAVIS_TAG" -o release/terraform-provider-onepassword_v$TRAVIS_TAG
+- if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
+- chmod +x release/terraform-provider-onepassword_v$TRAVIS_TAG
+- tar -cvzf release/terraform-provider-onepassword-$OS-$ARCH.tar.gz -C release/ terraform-provider-onepassword_v$TRAVIS_TAG
 deploy:
   provider: releases
   skip_cleanup: true
   api_key: $GITHUB_OAUTH_TOKEN
   file:
-  - terraform-provider-onepassword.windows.amd64.exe
-  - terraform-provider-onepassword.darwin.amd64
-  - terraform-provider-onepassword.linux.amd64
+  - release/terraform-provider-onepassword-$OS-$ARCH.tar.gz
   on:
     tags: true
