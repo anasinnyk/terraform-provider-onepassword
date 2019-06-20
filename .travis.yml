@@ -11,6 +11,8 @@ script:
 - if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
 - chmod +x release/terraform-provider-onepassword_v$TRAVIS_TAG
 - tar -cvzf release/terraform-provider-onepassword-$GOOS-$GOARCH.tar.gz -C release/ terraform-provider-onepassword_v$TRAVIS_TAG
+- ls -la release
+- echo $GOOS
 deploy:
   provider: releases
   skip_cleanup: true
