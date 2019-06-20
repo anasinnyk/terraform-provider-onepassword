@@ -10,12 +10,12 @@ script:
 - env GO111MODULE=on go build -ldflags "-X main.versionNumber=$TRAVIS_TAG" -o release/terraform-provider-onepassword_v$TRAVIS_TAG
 - if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
 - chmod +x release/terraform-provider-onepassword_v$TRAVIS_TAG
-- tar -cvzf release/terraform-provider-onepassword-$OS-$ARCH.tar.gz -C release/ terraform-provider-onepassword_v$TRAVIS_TAG
+- tar -cvzf release/terraform-provider-onepassword-$GOOS-$GOARCH.tar.gz -C release/ terraform-provider-onepassword_v$TRAVIS_TAG
 deploy:
   provider: releases
   skip_cleanup: true
   api_key: $GITHUB_OAUTH_TOKEN
   file:
-  - release/terraform-provider-onepassword-$OS-$ARCH.tar.gz
+  - release/terraform-provider-onepassword-$GOOS-$GOARCH.tar.gz
   on:
     tags: true
