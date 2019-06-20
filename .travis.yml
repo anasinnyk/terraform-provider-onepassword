@@ -2,9 +2,9 @@ language: go
 dist: trusty
 sudo: false
 env:
-- OS=linux ARCH=amd64
-- OS=windows ARCH=amd64
-- OS=darwin ARCH=amd64
+- GOOS=linux GOARCH=amd64
+- GOOS=windows GOARCH=amd64
+- GOOS=darwin GOARCH=amd64
 install: true
 script:
 - env GO111MODULE=on go build -ldflags "-X main.versionNumber=$TRAVIS_TAG" -o release/terraform-provider-onepassword_v$TRAVIS_TAG

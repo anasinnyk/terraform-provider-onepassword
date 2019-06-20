@@ -10,16 +10,16 @@ resource "random_string" "password" {
 }
 
 module "vault" {
-  source = "../example/vault"
+  source = "../examples/vault"
 }
 
 module "document" {
-  source   = "../example/document"
+  source   = "../examples/document"
   vault_id = "${module.vault.new}"
 }
 
 module "login" {
-  source   = "../example/login"
+  source   = "../examples/login"
   login    = "anasinnyk"
   password = "${random_string.password.result}"
   website  = "https://terraform.io"
@@ -27,13 +27,13 @@ module "login" {
 }
 
 module "secret_note" {
-  source   = "../example/secure_note"
+  source   = "../examples/secure_note"
   secret   = "${random_string.password.result}"
   vault_id = "${module.vault.new}"
 }
 
 module "password" {
-  source   = "../example/password"
+  source   = "../examples/password"
   password = "${random_string.password.result}"
   vault_id = "${module.vault.new}"
 }
