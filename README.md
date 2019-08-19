@@ -7,6 +7,7 @@
 
 [Provider](#Provider)
 
+* [onepassword_group](#onepassword_group)
 * [onepassword_vault](#onepassword_vault)
 * [onepassword_item_common](#onepassword_item_common)
 * [onepassword_item_document](#onepassword_item_document)
@@ -42,6 +43,46 @@ The following arguments are supported:
 * `subdomain` - (Optional) If you use corporate account you must fill subdomain form your 1password site. Defaults to `my` or via env variable `OP_SUBDOMAIN`.
 
 If `email`, `password` and `secret_key` is not set through the arguments or env variables, then the env variable `OP_SESSION_<subdomain>` is checked for existence. If set it will be assumed to be a valid session token and used while executing the `op` commands.
+
+## onepassword_group
+
+This resource can create/load groups in your 1Password account.
+
+### Example Usage
+
+#### Resource
+
+```hcl
+resource "onepassword_group" "this" {
+    name = "new-group"
+}
+```
+
+#### Data Source
+
+```hcl
+data "onepassword_group" "this" {
+    name = "exist-group"
+}
+```
+
+### Argument Reference
+
+* `name` - (Required) group name.
+
+### Attribute Reference
+
+* `id` - (Required) group id.
+
+*Note: and all from arguments.*
+
+### Import
+
+1Password Groups can be imported using the `id`, e.g.
+
+```
+terraform import onepassword_group.group 7kalogoe3kirwf5aizotkbzrpq
+```
 
 ## onepassword_vault
 
