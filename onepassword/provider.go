@@ -50,6 +50,7 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"onepassword_group":                 resourceGroup(),
 			"onepassword_item_common":           resourceItemCommon(),
 			"onepassword_item_software_license": resourceItemSoftwareLicense(),
 			"onepassword_item_identity":         resourceItemIdentity(),
@@ -61,6 +62,7 @@ func Provider() terraform.ResourceProvider {
 			"onepassword_vault":                 resourceVault(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
+			"onepassword_group":                 dataSourceGroup(),
 			"onepassword_item_common":           dataSourceItemCommon(),
 			"onepassword_item_software_license": dataSourceItemSoftwareLicense(),
 			"onepassword_item_identity":         dataSourceItemIdentity(),

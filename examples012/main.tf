@@ -9,6 +9,10 @@ resource "random_string" "password" {
   length = "32"
 }
 
+module "group" {
+  source = "./group"
+}
+
 module "vault" {
   source = "../examples/vault"
 }
