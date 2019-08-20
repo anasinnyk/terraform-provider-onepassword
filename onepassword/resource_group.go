@@ -36,7 +36,10 @@ func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(v.UUID)
-	d.Set("name", v.Name)
+	if err := d.Set("name", v.Name); err != nil {
+		return err
+	}
+
 	return d.Set("state", v.State)
 }
 
