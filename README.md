@@ -146,7 +146,7 @@ resource "onepassword_item_common" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_common" "this" {
+data "onepassword_item_common" "this" {
     name = "some-element-from-vault"
 }
 ```
@@ -217,7 +217,7 @@ resource "onepassword_item_document" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_document" "this" {
+data "onepassword_item_document" "this" {
     name = "some-document-from-vault"
 }
 ```
@@ -289,7 +289,7 @@ resource "onepassword_item_identity" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_identity" "this" {
+data "onepassword_item_identity" "this" {
     name = "some-identity-from-vault"
 }
 ```
@@ -357,7 +357,7 @@ resource "onepassword_item_login" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_login" "this" {
+data "onepassword_item_login" "this" {
     name = "some-login-from-vault"
 }
 ```
@@ -399,7 +399,7 @@ resource "onepassword_item_password" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_password" "this" {
+data "onepassword_item_password" "this" {
     name = "some-password-from-vault"
 }
 ```
@@ -442,7 +442,7 @@ resource "onepassword_item_secure_note" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_secure_note" "this" {
+data "onepassword_item_secure_note" "this" {
     name = "some-secure-note-from-vault"
 }
 ```
@@ -480,7 +480,7 @@ resource "onepassword_item_software_license" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_software_license" "this" {
+data "onepassword_item_software_license" "this" {
     name = "software-license-from-vault"
 }
 ```
@@ -525,7 +525,7 @@ resource "onepassword_item_credit_card" "this" {
 #### Data Source
 
 ```hcl
-resource "onepassword_item_credit_card" "this" {
+data "onepassword_item_credit_card" "this" {
     name = "credit_card-from-vault"
 }
 ```
