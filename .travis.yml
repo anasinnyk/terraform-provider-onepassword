@@ -4,6 +4,7 @@ sudo: false
 env:
   global:
   - BUILD_GOARCH=amd64
+  - GOPROXY=https://proxy.golang.org
   matrix:
   - BUILD_GOOS=linux
   - BUILD_GOOS=darwin
