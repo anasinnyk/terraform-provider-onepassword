@@ -42,7 +42,7 @@ The following arguments are supported:
 * `secret_key` - (Optional) secret key which you can download after registration or via env variable `OP_SECRET_KEY`.
 * `subdomain` - (Optional) If you use corporate account you must fill subdomain form your 1password site. Defaults to `my` or via env variable `OP_SUBDOMAIN`.
 
-If `email`, `password` and `secret_key` is not set through the arguments or env variables, then the env variable `OP_SESSION_<subdomain>` is checked for existence. If set it will be assumed to be a valid session token and used while executing the `op` commands.
+If `email`, `password` and `secret_key` is not set through the arguments or env variables, then the env variable `OP_SESSION_<subdomain>` is checked for existence. If set it will be assumed to be a valid session token and used while executing the `op` commands. Note that any dash `-` character within `subdomain` will be substituted upon `OP_SESSION_<subdomain>` env variable evaluation (e.g, if `subdomain=team-foo`, `OP_SESSION_team_foo` will be looked up).
 
 ## onepassword_group
 
@@ -167,7 +167,7 @@ resource "onepassword_item_common" "this" {
     }
 
     field = {
-      name  = "phone for reserva​tions"
+      name  = "phone for reservations"
       phone = "+38 (000) 000 0000"
     }
 

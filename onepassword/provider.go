@@ -205,7 +205,13 @@ func (m *Meta) NewOnePassClient() (*OnePassClient, error) {
 		email = ""
 		password = ""
 		secretKey = ""
-		sessionKeyName := "OP_SESSION_" + subdomain
+
+		var sessionKeyName string
+		if strings.Contains(subdomain, "-") {
+			sessionKeyName = "OP_SESSION_" + strings.ReplaceAll(subdomain, "-", "_")
+		} else {
+			sessionKeyName = "OP_SESSION_" + subdomain
+		}
 		session = os.Getenv(sessionKeyName)
 
 		if session == "" {
