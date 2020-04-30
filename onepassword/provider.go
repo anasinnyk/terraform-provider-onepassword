@@ -152,7 +152,7 @@ func unzip(src string, dest string) error {
 }
 
 func installOPClient() (string, error) {
-	version := "0.5.5"
+	version := "0.5.6"
 	if os.Getenv("OP_VERSION") != "" {
 		semVer, err := semver.NewVersion(os.Getenv("OP_VERSION"))
 		if err != nil {
@@ -254,7 +254,7 @@ func (o *OnePassClient) SignIn() error {
 
 	session, err := cmd.CombinedOutput()
 	if err != nil {
-		return errors.New(fmt.Sprintf("Cannot signin: %s", err))
+		return errors.New(fmt.Sprintf("Cannot signin: %s\nError code: %s", string(session), err))
 	}
 
 	o.Session = string(session)
