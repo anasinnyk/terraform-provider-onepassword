@@ -20,6 +20,8 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+var version string = "0.7.1"
+
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -151,8 +153,31 @@ func unzip(src string, dest string) error {
 	return nil
 }
 
+func findExistingOPClient() (string, error) {
+	o, err := exec.Command("op", "--version", "--raw").Output()
+
+	if err != nil {
+		return "", fmt.Errorf("Trouble calling: op\nOutput: %s", o)
+	}
+
+	c, err := semver.NewConstraint(">= " + version)
+	if err != nil {
+		return "", err
+	}
+
+	v, err := semver.NewVersion(strings.TrimSuffix(string(o), "\n"))
+	if err != nil {
+		return "", fmt.Errorf("[%s]", string(o))
+	}
+
+	if c.Check(v) {
+		return "op", nil
+	}
+
+	return "", fmt.Errorf("op version needs to be equal or greater than: %s", version)
+}
+
 func installOPClient() (string, error) {
-	version := "0.5.5"
 	if os.Getenv("OP_VERSION") != "" {
 		semVer, err := semver.NewVersion(os.Getenv("OP_VERSION"))
 		if err != nil {
@@ -190,9 +215,12 @@ func installOPClient() (string, error) {
 }
 
 func (m *Meta) NewOnePassClient() (*OnePassClient, error) {
-	bin, err := installOPClient()
+	bin, err := findExistingOPClient()
 	if err != nil {
-		return nil, err
+		bin, err = installOPClient()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	subdomain := m.data.Get("subdomain").(string)
@@ -254,7 +282,7 @@ func (o *OnePassClient) SignIn() error {
 
 	session, err := cmd.CombinedOutput()
 	if err != nil {
-		return errors.New(fmt.Sprintf("Cannot signin: %s", err))
+		return errors.New(fmt.Sprintf("Cannot signin: %s\nExit code: %s", string(session), err))
 	}
 
 	o.Session = string(session)
