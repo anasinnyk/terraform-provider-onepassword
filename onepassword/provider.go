@@ -152,7 +152,7 @@ func unzip(src string, dest string) error {
 }
 
 func installOPClient() (string, error) {
-	version := "0.5.6"
+	version := "0.5.5"
 	if os.Getenv("OP_VERSION") != "" {
 		semVer, err := semver.NewVersion(os.Getenv("OP_VERSION"))
 		if err != nil {
