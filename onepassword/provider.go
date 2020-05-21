@@ -154,7 +154,7 @@ func unzip(src string, dest string) error {
 }
 
 func findExistingOPClient() (string, error) {
-	o, err := exec.Command("op", "--version", "--raw").Output()
+	o, err := exec.Command("op", "--version").Output()
 
 	if err != nil {
 		return "", fmt.Errorf("Trouble calling: op\nOutput: %s", o)
