@@ -46,8 +46,12 @@ func Provider() terraform.ResourceProvider {
 			"subdomain": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "my",
-				DefaultFunc: schema.EnvDefaultFunc("OP_SUBDOMAIN", nil),
+				DefaultFunc: func() (interface{}, error) {
+					if v := os.Getenv("OP_SUBDOMAIN"); v != "" {
+					  return v, nil
+					}
+					return "my", nil
+				  },
 				Description: "Set alternative subdomain for 1password. From [subdomain].1password.com",
 			},
 		},
