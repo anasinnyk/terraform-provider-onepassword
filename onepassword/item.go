@@ -246,14 +246,23 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 		ItemResource,
 		string(template),
 		detailsHash,
-		fmt.Sprintf("--title=%s", v.Overview.Title),
-		fmt.Sprintf("--url=%s", v.Overview.URL),
-		fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")),
 	}
 
 	if v.Vault != "" {
 		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
 	}
+	if v.Overview.Title != "" {
+		args = append(args, fmt.Sprintf("--title=%s", v.Overview.Title))
+	}
+
+	if v.Overview.URL != "" {
+		args = append(args, fmt.Sprintf("--url=%s", v.Overview.URL))
+	}
+
+	if v.Overview.Title != "" {
+		args = append(args, fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")))
+	}
+
 	res, err := o.runCmd(args...)
 	if err == nil {
 		if id, err := getResultID(res); err == nil {
