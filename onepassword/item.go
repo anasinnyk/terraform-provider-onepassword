@@ -251,6 +251,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	if v.Vault != "" {
 		args = append(args, fmt.Sprintf("--vault=%s", v.Vault))
 	}
+
 	if v.Overview.Title != "" {
 		args = append(args, fmt.Sprintf("--title=%s", v.Overview.Title))
 	}
