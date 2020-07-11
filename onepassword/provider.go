@@ -58,6 +58,7 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"onepassword_group":                 resourceGroup(),
+			"onepassword_group_member":          resourceGroupMember(),
 			"onepassword_item_common":           resourceItemCommon(),
 			"onepassword_item_software_license": resourceItemSoftwareLicense(),
 			"onepassword_item_identity":         resourceItemIdentity(),
@@ -89,10 +90,15 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	return NewMeta(d)
 }
 
-const opPasswordCreate = "create"
-const opPasswordEdit = "edit"
-const opPasswordDelete = "delete"
-const opPasswordGet = "get"
+const (
+	opPasswordAdd    = "add"
+	opPasswordCreate = "create"
+	opPasswordEdit   = "edit"
+	opPasswordDelete = "delete"
+	opPasswordGet    = "get"
+	opPasswordList   = "list"
+	opPasswordRemove = "remove"
+)
 
 type OnePassClient struct {
 	Password    string
