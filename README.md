@@ -8,6 +8,7 @@
 [Provider](#Provider)
 
 * [onepassword_group](#onepassword_group)
+* [onepassword_user](#onepassword_user)
 * [onepassword_vault](#onepassword_vault)
 * [onepassword_item_common](#onepassword_item_common)
 * [onepassword_item_document](#onepassword_item_document)
@@ -83,6 +84,33 @@ data "onepassword_group" "this" {
 ```
 terraform import onepassword_group.group 7kalogoe3kirwf5aizotkbzrpq
 ```
+
+## onepassword_user
+
+This resource can read user data in your 1Password account.
+
+### Example Usage
+
+#### Data Source
+
+```hcl
+data "onepassword_user" "this" {
+    email = "example@example.com"
+}
+```
+
+### Argument Reference
+
+* `email` - (Required) user email address.
+
+### Attribute Reference
+
+* `id` - (Required) user id.
+* `firstname` - User first name.
+* `lastname` - User last name.
+* `state` - Current user state. "A" for Active, "S" for Suspended.
+
+*Note: and all from arguments.*
 
 ## onepassword_vault
 

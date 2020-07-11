@@ -13,6 +13,11 @@ module "group" {
   source = "./group"
 }
 
+module "user" {
+  source = "./user"
+  email = "example@example.com"
+}
+
 module "vault" {
   source = "../examples/vault"
 }
