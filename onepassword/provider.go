@@ -65,6 +65,7 @@ func Provider() terraform.ResourceProvider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"onepassword_group":                 dataSourceGroup(),
+			"onepassword_user":                  dataSourceUser(),
 			"onepassword_item_common":           dataSourceItemCommon(),
 			"onepassword_item_software_license": dataSourceItemSoftwareLicense(),
 			"onepassword_item_identity":         dataSourceItemIdentity(),
@@ -318,6 +319,13 @@ func getID(d *schema.ResourceData) string {
 		return d.Id()
 	}
 	return d.Get("name").(string)
+}
+
+func getIDEmail(d *schema.ResourceData) string {
+	if d.Id() != "" {
+		return d.Id()
+	}
+	return d.Get("email").(string)
 }
 
 func (o *OnePassClient) Delete(resource string, id string) error {
