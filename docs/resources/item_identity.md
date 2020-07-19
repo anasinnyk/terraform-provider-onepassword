@@ -1,6 +1,6 @@
 # onepassword_item_identity
 
-This resource can create/load any identity for/from 1password.
+This resource can create any identity for 1password.
 
 ## Example Usage
 

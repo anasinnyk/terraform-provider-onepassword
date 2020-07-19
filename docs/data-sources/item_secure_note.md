@@ -1,6 +1,6 @@
 # onepassword_item_secure_note
 
-This resource can create/load any secure note for/from 1password.
+This resource can load any secure note from 1password.
 
 ## Example Usage
 

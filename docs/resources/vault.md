@@ -1,6 +1,6 @@
 # onepassword_vault
 
-This resource create/load vault in your 1password account.
+This resource can create vaults in your 1password account.
 
 ## Example Usage
 

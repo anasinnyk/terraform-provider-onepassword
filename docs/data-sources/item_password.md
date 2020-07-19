@@ -1,6 +1,6 @@
 # onepassword_item_password
 
-This resource can create/load any password for/from 1password.
+This resource can load any password from 1password.
 
 ## Example Usage
 

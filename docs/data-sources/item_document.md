@@ -1,6 +1,6 @@
 # onepassword_item_document
 
-This resource can create/load any document for/from 1password.
+This resource can load any document from 1password.
 
 ## Example Usage
 
