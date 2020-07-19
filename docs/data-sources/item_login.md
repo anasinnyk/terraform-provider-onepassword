@@ -1,6 +1,6 @@
 # onepassword_item_login
 
-This resource can create/load any login for/from 1password.
+This resource can load any login from 1password.
 
 ## Example Usage
 

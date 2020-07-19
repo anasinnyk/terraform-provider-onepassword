@@ -1,6 +1,6 @@
 # onepassword_group
 
-This resource can create/load groups in your 1Password account.
+This resource can load groups from your 1Password account.
 
 ## Example Usage
 

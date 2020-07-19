@@ -1,6 +1,6 @@
 # onepassword_item_software_license
 
-This resource can create/load any software license for/from 1password.
+This resource can create any software license for 1password.
 
 ## Example Usage
 
