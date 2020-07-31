@@ -19,11 +19,4 @@ data "onepassword_group" "this" {
 In addition to the above arguments, the following attributes are exported:
 
 * `id` - group id.
-
-## Import
-
-1Password Groups can be imported using the `id`, e.g.
-
-```
-terraform import onepassword_group.group 7kalogoe3kirwf5aizotkbzrpq
-```
+* `state` - current state of the group. "A" for active, "D" for deleted.

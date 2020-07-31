@@ -21,6 +21,10 @@ func resourceGroup() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
+			"state": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }

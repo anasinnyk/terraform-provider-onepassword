@@ -19,6 +19,7 @@ resource "onepassword_group" "this" {
 In addition to the above arguments, the following attributes are exported:
 
 * `id` - group id.
+* `state` - current state of the group. "A" for active, "D" for deleted.
 
 ## Import
 
