@@ -8,6 +8,7 @@ func resourceGroup() *schema.Resource {
 	return &schema.Resource{
 		Read:   resourceGroupRead,
 		Create: resourceGroupCreate,
+		Update: resourceGroupUpdate,
 		Delete: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
@@ -18,7 +19,6 @@ func resourceGroup() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
-				ForceNew: true,
 				Required: true,
 			},
 			"state": {
@@ -65,4 +65,17 @@ func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
 		d.SetId("")
 	}
 	return err
+}
+
+func resourceGroupUpdate(d *schema.ResourceData, meta interface{}) error {
+	m := meta.(*Meta)
+
+	g := &Group{
+		Name: d.Get("name").(string),
+	}
+
+	if err := m.onePassClient.UpdateGroup(getID(d), g); err != nil {
+		return err
+	}
+	return resourceGroupRead(d, meta)
 }

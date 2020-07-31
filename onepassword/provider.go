@@ -89,6 +89,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 }
 
 const opPasswordCreate = "create"
+const opPasswordEdit = "edit"
 const opPasswordDelete = "delete"
 const opPasswordGet = "get"
 

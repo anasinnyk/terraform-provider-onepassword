@@ -48,6 +48,13 @@ func (o *OnePassClient) CreateGroup(v *Group) (*Group, error) {
 	return v, nil
 }
 
+// UpdateGroup updates an existing 1Password Group
+func (o *OnePassClient) UpdateGroup(id string, v *Group) error {
+	args := []string{opPasswordEdit, GroupResource, id, "--name=" + v.Name}
+	_, err := o.runCmd(args...)
+	return err
+}
+
 // DeleteGroup deletes a 1Password Group
 func (o *OnePassClient) DeleteGroup(id string) error {
 	return o.Delete(GroupResource, id)
