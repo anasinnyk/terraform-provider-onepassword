@@ -94,13 +94,14 @@ const opPasswordDelete = "delete"
 const opPasswordGet = "get"
 
 type OnePassClient struct {
-	Password  string
-	Email     string
-	SecretKey string
-	Subdomain string
-	PathToOp  string
-	Session   string
-	mutex     *sync.Mutex
+	Password    string
+	Email       string
+	SecretKey   string
+	Subdomain   string
+	PathToOp    string
+	Session     string
+	execCommand func(string, ...string) *exec.Cmd // Can be overridden for mocking purposes
+	mutex       *sync.Mutex
 }
 
 type Meta struct {
@@ -255,13 +256,14 @@ func (m *Meta) NewOnePassClient() (*OnePassClient, error) {
 	}
 
 	op := &OnePassClient{
-		Email:     email,
-		Password:  password,
-		SecretKey: secretKey,
-		Subdomain: subdomain,
-		PathToOp:  bin,
-		Session:   session,
-		mutex:     &sync.Mutex{},
+		Email:       email,
+		Password:    password,
+		SecretKey:   secretKey,
+		Subdomain:   subdomain,
+		PathToOp:    bin,
+		Session:     session,
+		execCommand: exec.Command,
+		mutex:       &sync.Mutex{},
 	}
 
 	if session != "" {
@@ -298,7 +300,7 @@ func (o *OnePassClient) SignIn() error {
 func (o *OnePassClient) runCmd(args ...string) ([]byte, error) {
 	args = append(args, fmt.Sprintf("--session=%s", strings.Trim(o.Session, "\n")))
 	o.mutex.Lock()
-	cmd := exec.Command(o.PathToOp, args...)
+	cmd := o.execCommand(o.PathToOp, args...)
 	defer o.mutex.Unlock()
 	res, err := cmd.CombinedOutput()
 	if err != nil {
