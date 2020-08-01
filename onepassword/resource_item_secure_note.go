@@ -1,20 +1,24 @@
 package onepassword
 
 import (
+	"context"
 	"errors"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceItemSecureNote() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemSecureNoteRead,
-		Create: resourceItemSecureNoteCreate,
-		Delete: resourceItemDelete,
+		ReadContext:   resourceItemSecureNoteRead,
+		CreateContext: resourceItemSecureNoteCreate,
+		DeleteContext: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemSecureNoteRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceItemSecureNoteRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -49,34 +53,37 @@ func resourceItemSecureNote() *schema.Resource {
 	}
 }
 
-func resourceItemSecureNoteRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemSecureNoteRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
 	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if v.Template != Category2Template(SecureNoteCategory) {
-		return errors.New("item is not from " + string(SecureNoteCategory))
+		return diag.FromErr(errors.New("item is not from " + string(SecureNoteCategory)))
 	}
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("tags", v.Overview.Tags); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("vault", v.Vault); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("notes", v.Details.Notes); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return d.Set("section", ProcessSections(v.Details.Sections))
+	if err := d.Set("section", ProcessSections(v.Details.Sections)); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceItemSecureNoteCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemSecureNoteCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	item := &Item{
 		Vault:    d.Get("vault").(string),
 		Template: Category2Template(SecureNoteCategory),
@@ -92,7 +99,7 @@ func resourceItemSecureNoteCreate(d *schema.ResourceData, meta interface{}) erro
 	m := meta.(*Meta)
 	err := m.onePassClient.CreateItem(item)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(item.UUID)
 	return nil

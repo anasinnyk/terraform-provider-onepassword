@@ -1,18 +1,24 @@
 package onepassword
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
+	"context"
+	"errors"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceVault() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceVaultRead,
-		Create: resourceVaultCreate,
-		Delete: resourceVaultDelete,
+		ReadContext:   resourceVaultRead,
+		CreateContext: resourceVaultCreate,
+		DeleteContext: resourceVaultDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceVaultRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceVaultRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -25,33 +31,36 @@ func resourceVault() *schema.Resource {
 	}
 }
 
-func resourceVaultRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVaultRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	v, err := m.onePassClient.ReadVault(getID(d))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(v.UUID)
-	return d.Set("name", v.Name)
+	if err := d.Set("name", v.Name); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceVaultCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVaultCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	_, err := m.onePassClient.CreateVault(&Vault{
 		Name: d.Get("name").(string),
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return resourceVaultRead(d, meta)
+	return resourceVaultRead(ctx, d, meta)
 }
 
-func resourceVaultDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVaultDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	err := m.onePassClient.DeleteVault(getID(d))
 	if err == nil {
 		d.SetId("")
 	}
-	return err
+	return diag.FromErr(err)
 }

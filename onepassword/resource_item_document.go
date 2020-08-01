@@ -1,20 +1,24 @@
 package onepassword
 
 import (
+	"context"
 	"errors"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceItemDocument() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemDocumentRead,
-		Create: resourceItemDocumentCreate,
-		Delete: resourceItemDelete,
+		ReadContext:   resourceItemDocumentRead,
+		CreateContext: resourceItemDocumentCreate,
+		DeleteContext: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemDocumentRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceItemDocumentRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -48,36 +52,39 @@ func resourceItemDocument() *schema.Resource {
 	}
 }
 
-func resourceItemDocumentRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemDocumentRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
 	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if v.Template != Category2Template(DocumentCategory) {
-		return errors.New("item is not from " + string(DocumentCategory))
+		return diag.FromErr(errors.New("item is not from " + string(DocumentCategory)))
 	}
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("tags", v.Overview.Tags); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("vault", v.Vault); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	content, err := m.onePassClient.ReadDocument(v.UUID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return d.Set("content", content)
+	if err := d.Set("content", content); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceItemDocumentCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemDocumentCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	item := &Item{
 		Vault:    d.Get("vault").(string),
 		Template: Category2Template(DocumentCategory),
@@ -89,13 +96,16 @@ func resourceItemDocumentCreate(d *schema.ResourceData, meta interface{}) error 
 	m := meta.(*Meta)
 	err := m.onePassClient.CreateDocument(item, d.Get("file_path").(string))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	content, err := m.onePassClient.ReadDocument(item.UUID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(item.UUID)
-	return d.Set("content", content)
+	if err := d.Set("content", content); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }

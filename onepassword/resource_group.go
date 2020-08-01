@@ -1,19 +1,25 @@
 package onepassword
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
+	"context"
+	"errors"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceGroupRead,
-		Create: resourceGroupCreate,
-		Update: resourceGroupUpdate,
-		Delete: resourceGroupDelete,
+		ReadContext:   resourceGroupRead,
+		CreateContext: resourceGroupCreate,
+		UpdateContext: resourceGroupUpdate,
+		DeleteContext: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceGroupRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceGroupRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -29,11 +35,11 @@ func resourceGroup() *schema.Resource {
 	}
 }
 
-func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	v, err := m.onePassClient.ReadGroup(getID(d))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	} else if v.State == GroupStateDeleted {
 		d.SetId("")
 		return nil
@@ -41,33 +47,37 @@ func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Name); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return d.Set("state", v.State)
+	err = d.Set("state", v.State)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	_, err := m.onePassClient.CreateGroup(&Group{
 		Name: d.Get("name").(string),
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return resourceGroupRead(d, meta)
+	return resourceGroupRead(ctx, d, meta)
 }
 
-func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	err := m.onePassClient.DeleteGroup(getID(d))
 	if err == nil {
 		d.SetId("")
 	}
-	return err
+	return diag.FromErr(err)
 }
 
-func resourceGroupUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 
 	g := &Group{
@@ -75,7 +85,7 @@ func resourceGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := m.onePassClient.UpdateGroup(getID(d), g); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return resourceGroupRead(d, meta)
+	return resourceGroupRead(ctx, d, meta)
 }

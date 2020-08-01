@@ -1,10 +1,10 @@
 package onepassword
 
-import "github.com/hashicorp/terraform/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func dataSourceItemSecureNote() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemSecureNoteRead,
-		Schema: resourceItemSecureNote().Schema,
+		ReadContext: resourceItemSecureNoteRead,
+		Schema:      resourceItemSecureNote().Schema,
 	}
 }
