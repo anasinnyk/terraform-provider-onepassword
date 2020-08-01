@@ -5,9 +5,9 @@
 ```hcl
 resource "onepassword_item_credit_card" "this" {
   name  = "Default Visa"
-  vault = "${var.vault_id}"
+  vault = var.vault_id
 
-  main = {
+  main {
     cardholder  = "John Smith"
     type        = "visa"
     number      = "4111 1111 1111 1111"

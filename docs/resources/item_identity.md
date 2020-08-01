@@ -7,9 +7,9 @@ This resource can create any identity for 1password.
 ```hcl
 resource "onepassword_item_identity" "this" {
   name  = "Andrii Nasinnyk"
-  vault = "${var.vault_id}"
+  vault = var.vault_id
 
-  identification = {
+  identification {
     firstname  = "Andrii"
     initial    = "AN#24"
     lastname   = "Nasinnyk"
@@ -21,8 +21,8 @@ resource "onepassword_item_identity" "this" {
     job_title  = "Point Guard"
   }
 
-  address = {
-    address = {
+  address {
+    address {
       city    = "Kyiv"
       street  = "11 Line"
       country = "ua"
@@ -37,7 +37,7 @@ resource "onepassword_item_identity" "this" {
     business_phone = "+38 (000) 000 0000"
   }
 
-  internet = {
+  internet {
     username = "anasinnyk"
     email    = "andriy.nas@gmail.com"
   }

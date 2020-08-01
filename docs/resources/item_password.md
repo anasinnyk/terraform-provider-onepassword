@@ -9,7 +9,7 @@ resource "onepassword_item_password" "this" {
   name     = "login-title"
   password = "123456qQ"
   url      = "https://example.com"
-  vault    = "${var.vault_id}"
+  vault    = var.vault_id
 }
 ```
 
