@@ -7,7 +7,7 @@ This resource can create any software license for 1password.
 ```hcl
 resource "onepassword_item_software_license" "this" {
   name        = "software-license-title"
-  vault       = "${var.vault_id}"
+  vault       = var.vault_id
   license_key = "SOME-SECURE-SOWTWARE-LICENSE-KEY"
 }
 ```

@@ -7,7 +7,7 @@ This resource can create any document for 1password.
 ```hcl
 resource "onepassword_item_document" "this" {
   name      = "document-name"
-  vault     = "${var.vault_id}"
+  vault     = var.vault_id
   file_path = "${path.module}/test.txt"
 }
 ```

@@ -12,7 +12,7 @@ resource "onepassword_item_secure_note" "this" {
     secret
     text
   >>>
-  vault = "${var.vault_id}"
+  vault = var.vault_id
 }
 ```
 
