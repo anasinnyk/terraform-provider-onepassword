@@ -1,3 +1,3 @@
 variable "vault_id" {
-  type = "string"
+  type = string
 }

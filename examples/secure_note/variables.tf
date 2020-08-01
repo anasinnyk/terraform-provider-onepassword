@@ -1,7 +1,7 @@
 variable "secret" {
-  type = "string"
+  type = string
 }
 
 variable "vault_id" {
-  type = "string"
+  type = string
 }

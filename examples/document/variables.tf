@@ -3,5 +3,5 @@ variable "new_document_name" {
 }
 
 variable "vault_id" {
-  type = "string"
+  type = string
 }

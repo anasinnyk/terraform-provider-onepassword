@@ -1,55 +1,55 @@
 resource "onepassword_item_common" "this" {
   name  = "Coupone"
-  vault = "${var.vault_id}"
+  vault = var.vault_id
 
   template = "Reward Program"
 
-  section = {
-    field = {
+  section {
+    field {
       name   = "company name"
       string = "MacPaw"
     }
 
-    field = {
+    field {
       name   = "member name"
       string = "anasinnyk"
     }
 
-    field = {
+    field {
       name   = "member ID"
       string = "123"
     }
 
-    field = {
+    field {
       name      = "PIN"
       concealed = "123456qQ"
     }
   }
 
-  section = {
+  section {
     name = "More Information"
 
-    field = {
+    field {
       name   = "member ID (additional)"
       string = "321"
     }
 
-    field = {
+    field {
       name  = "customer service phone"
       phone = "+38 (000) 000 0000"
     }
 
-    field = {
+    field {
       name  = "phone for reserva​tions"
       phone = "+38 (000) 000 0000"
     }
 
-    field = {
+    field {
       name = "website"
       url  = "https://groupon.com"
     }
 
-    field = {
+    field {
       name       = "member since"
       month_year = 201903
     }

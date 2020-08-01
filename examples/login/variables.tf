@@ -1,15 +1,15 @@
 variable "password" {
-  type = "string"
+  type = string
 }
 
 variable "login" {
-  type = "string"
+  type = string
 }
 
 variable "website" {
-  type = "string"
+  type = string
 }
 
 variable "vault_id" {
-  type = "string"
+  type = string
 }
