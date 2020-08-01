@@ -1,10 +1,10 @@
 package onepassword
 
-import "github.com/hashicorp/terraform/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func dataSourceItemCreditCard() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemCreditCardRead,
-		Schema: resourceItemCreditCard().Schema,
+		ReadContext: resourceItemCreditCardRead,
+		Schema:      resourceItemCreditCard().Schema,
 	}
 }

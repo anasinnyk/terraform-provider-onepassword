@@ -1,10 +1,10 @@
 package onepassword
 
-import "github.com/hashicorp/terraform/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func dataSourceItemSoftwareLicense() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemSoftwareLicenseRead,
-		Schema: resourceItemSoftwareLicense().Schema,
+		ReadContext: resourceItemSoftwareLicenseRead,
+		Schema:      resourceItemSoftwareLicense().Schema,
 	}
 }

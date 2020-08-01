@@ -1,20 +1,24 @@
 package onepassword
 
 import (
+	"context"
 	"errors"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceItemPassword() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemPasswordRead,
-		Create: resourceItemPasswordCreate,
-		Delete: resourceItemDelete,
+		ReadContext:   resourceItemPasswordRead,
+		CreateContext: resourceItemPasswordCreate,
+		DeleteContext: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemPasswordRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceItemPasswordRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -61,40 +65,43 @@ func resourceItemPassword() *schema.Resource {
 	}
 }
 
-func resourceItemPasswordRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemPasswordRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
 	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if v.Template != Category2Template(PasswordCategory) {
-		return errors.New("item is not from " + string(PasswordCategory))
+		diag.FromErr(errors.New("item is not from " + string(PasswordCategory)))
 	}
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if err := d.Set("url", v.Overview.URL); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if err := d.Set("notes", v.Details.Notes); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if err := d.Set("tags", v.Overview.Tags); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if err := d.Set("vault", v.Vault); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 	if err := d.Set("password", v.Details.Password); err != nil {
-		return err
+		diag.FromErr(err)
 	}
-	return d.Set("section", ProcessSections(v.Details.Sections))
+	if err := d.Set("section", ProcessSections(v.Details.Sections)); err != nil {
+		diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceItemPasswordCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemPasswordCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	item := &Item{
 		Vault:    d.Get("vault").(string),
 		Template: Category2Template(PasswordCategory),
@@ -112,7 +119,7 @@ func resourceItemPasswordCreate(d *schema.ResourceData, meta interface{}) error 
 	m := meta.(*Meta)
 	err := m.onePassClient.CreateItem(item)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(item.UUID)
 	return nil

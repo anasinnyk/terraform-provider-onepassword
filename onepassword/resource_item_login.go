@@ -1,20 +1,24 @@
 package onepassword
 
 import (
+	"context"
 	"errors"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceItemLogin() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemLoginRead,
-		Create: resourceItemLoginCreate,
-		Delete: resourceItemDelete,
+		ReadContext:   resourceItemLoginRead,
+		CreateContext: resourceItemLoginCreate,
+		DeleteContext: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemLoginRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceItemLoginRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -66,49 +70,52 @@ func resourceItemLogin() *schema.Resource {
 	}
 }
 
-func resourceItemLoginRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemLoginRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
 	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if v.Template != Category2Template(LoginCategory) {
-		return errors.New("item is not from " + string(LoginCategory))
+		return diag.FromErr(errors.New("item is not from " + string(LoginCategory)))
 	}
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("url", v.Overview.URL); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("notes", v.Details.Notes); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("tags", v.Overview.Tags); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("vault", v.Vault); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	for _, field := range v.Details.Fields {
 		if field.Name == "username" {
 			if err := d.Set("username", field.Value); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		if field.Name == "password" {
 			if err := d.Set("password", field.Value); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
-	return d.Set("section", ProcessSections(v.Details.Sections))
+	if err := d.Set("section", ProcessSections(v.Details.Sections)); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemLoginCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	item := &Item{
 		Vault:    d.Get("vault").(string),
 		Template: Category2Template(LoginCategory),
@@ -139,7 +146,7 @@ func resourceItemLoginCreate(d *schema.ResourceData, meta interface{}) error {
 	m := meta.(*Meta)
 	err := m.onePassClient.CreateItem(item)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(item.UUID)
 	return nil

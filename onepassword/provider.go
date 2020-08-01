@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"archive/zip"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,13 +17,13 @@ import (
 	"sync"
 
 	"github.com/Masterminds/semver"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var version string = "0.7.1"
 
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"email": {
@@ -44,14 +45,14 @@ func Provider() terraform.ResourceProvider {
 				Description: "Set account secret key",
 			},
 			"subdomain": {
-				Type:        schema.TypeString,
-				Optional:    true,
+				Type:     schema.TypeString,
+				Optional: true,
 				DefaultFunc: func() (interface{}, error) {
 					if v := os.Getenv("OP_SUBDOMAIN"); v != "" {
-					  return v, nil
+						return v, nil
 					}
 					return "my", nil
-				  },
+				},
 				Description: "Set alternative subdomain for 1password. From [subdomain].1password.com",
 			},
 		},
@@ -80,11 +81,11 @@ func Provider() terraform.ResourceProvider {
 			"onepassword_item_login":            dataSourceItemLogin(),
 			"onepassword_vault":                 dataSourceVault(),
 		},
-		ConfigureFunc: providerConfigure,
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return NewMeta(d)
 }
 
@@ -109,11 +110,14 @@ type Meta struct {
 	onePassClient *OnePassClient
 }
 
-func NewMeta(d *schema.ResourceData) (*Meta, error) {
+func NewMeta(d *schema.ResourceData) (*Meta, diag.Diagnostics) {
 	m := &Meta{data: d}
 	client, err := m.NewOnePassClient()
+	if err != nil {
+		return m, diag.FromErr(err)
+	}
 	m.onePassClient = client
-	return m, err
+	return m, nil
 }
 
 func unzip(src string, dest string) error {

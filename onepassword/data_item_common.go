@@ -1,6 +1,6 @@
 package onepassword
 
-import "github.com/hashicorp/terraform/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func dataSourceItemCommon() *schema.Resource {
 	s := resourceItemCommon().Schema
@@ -8,7 +8,7 @@ func dataSourceItemCommon() *schema.Resource {
 	s["template"].Optional = true
 
 	return &schema.Resource{
-		Read:   resourceItemCommonRead,
-		Schema: s,
+		ReadContext: resourceItemCommonRead,
+		Schema:      s,
 	}
 }

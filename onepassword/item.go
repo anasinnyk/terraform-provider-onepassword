@@ -1,12 +1,14 @@
 package onepassword
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/kalaspuffar/base64url"
 )
 
@@ -304,13 +306,13 @@ func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {
 	return err
 }
 
-func resourceItemDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	err := m.onePassClient.DeleteItem(getID(d))
 	if err == nil {
 		d.SetId("")
 	}
-	return err
+	return diag.FromErr(err)
 }
 
 func (o *OnePassClient) DeleteItem(id string) error {

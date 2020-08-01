@@ -1,21 +1,25 @@
 package onepassword
 
 import (
+	"context"
 	"errors"
 
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceItemCreditCard() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceItemCreditCardRead,
-		Create: resourceItemCreditCardCreate,
-		Delete: resourceItemDelete,
+		ReadContext:   resourceItemCreditCardRead,
+		CreateContext: resourceItemCreditCardCreate,
+		DeleteContext: resourceItemDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				err := resourceItemCreditCardRead(d, meta)
-				return []*schema.ResourceData{d}, err
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				if err := resourceItemCreditCardRead(ctx, d, meta); err.HasError() {
+					return []*schema.ResourceData{d}, errors.New(err[0].Summary)
+				}
+				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
@@ -110,31 +114,31 @@ func resourceItemCreditCard() *schema.Resource {
 	}
 }
 
-func resourceItemCreditCardRead(d *schema.ResourceData, meta interface{}) error {
+func resourceItemCreditCardRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
 	vaultID := d.Get("vault").(string)
 	v, err := m.onePassClient.ReadItem(getID(d), vaultID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if v.Template != Category2Template(CreditCardCategory) {
-		return errors.New("item is not from " + string(CreditCardCategory))
+		return diag.FromErr(errors.New("item is not from " + string(CreditCardCategory)))
 	}
 
 	d.SetId(v.UUID)
 	if err := d.Set("name", v.Overview.Title); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("tags", v.Overview.Tags); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("vault", v.Vault); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("notes", v.Details.Notes); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
+	if err := parseSectionFromSchema(v.Details.Sections, d, []SectionGroup{
 		{
 			Name:     "main",
 			Selector: "",
@@ -147,10 +151,13 @@ func resourceItemCreditCardRead(d *schema.ResourceData, meta interface{}) error 
 				"valid_from":  "validFrom",
 			},
 		},
-	})
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+	return nil
 }
 
-func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceItemCreditCardCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	main := d.Get("main").([]interface{})[0].(map[string]interface{})
 	item := &Item{
 		Vault:    d.Get("vault").(string),
@@ -243,7 +250,7 @@ func resourceItemCreditCardCreate(d *schema.ResourceData, meta interface{}) erro
 	m := meta.(*Meta)
 	err := m.onePassClient.CreateItem(item)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(item.UUID)
 	return nil

@@ -1,10 +1,10 @@
 package onepassword
 
-import "github.com/hashicorp/terraform/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func dataSourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Read:   resourceGroupRead,
-		Schema: resourceGroup().Schema,
+		ReadContext: resourceGroupRead,
+		Schema:      resourceGroup().Schema,
 	}
 }
