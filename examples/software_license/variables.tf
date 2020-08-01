@@ -1,7 +1,7 @@
 variable "license_key" {
-  type = "string"
+  type = string
 }
 
 variable "vault_id" {
-  type = "string"
+  type = string
 }

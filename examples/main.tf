@@ -5,8 +5,25 @@ provider "onepassword" {
   subdomain  = "company-domain"               // skip it or use my if you use personal 1password account or use environment variable OP_SUBDOMAIN
 }
 
+provider "random" {
+  version = "~> 2.3"
+}
+
+terraform {
+    required_version = ">= 0.12"
+}
+
 resource "random_string" "password" {
   length = "32"
+}
+
+module "group" {
+  source = "./group"
+}
+
+module "user" {
+  source = "./user"
+  email = "example@example.com"
 }
 
 module "vault" {
@@ -15,46 +32,46 @@ module "vault" {
 
 module "document" {
   source   = "./document"
-  vault_id = "${module.vault.new}"
+  vault_id = module.vault.new
 }
 
 module "login" {
   source   = "./login"
   login    = "anasinnyk"
-  password = "${random_string.password.result}"
+  password = random_string.password.result
   website  = "https://terraform.io"
-  vault_id = "${module.vault.new}"
+  vault_id = module.vault.new
 }
 
 module "secret_note" {
   source   = "./secure_note"
-  secret   = "${random_string.password.result}"
-  vault_id = "${module.vault.new}"
+  secret   = random_string.password.result
+  vault_id = module.vault.new
 }
 
 module "password" {
   source   = "./password"
-  password = "${random_string.password.result}"
-  vault_id = "${module.vault.new}"
+  password = random_string.password.result
+  vault_id = module.vault.new
 }
 
 module "software_license" {
   source      = "./software_license"
-  license_key = "${random_string.password.result}"
-  vault_id    = "${module.vault.new}"
+  license_key = random_string.password.result
+  vault_id    = module.vault.new
 }
 
 module "credit_card" {
   source   = "./credit_card"
-  vault_id = "${module.vault.new}"
+  vault_id = module.vault.new
 }
 
 module "identity" {
   source   = "./identity"
-  vault_id = "${module.vault.new}"
+  vault_id = module.vault.new
 }
 
 module "reward_program" {
   source   = "./reward_program"
-  vault_id = "${module.vault.new}"
+  vault_id = module.vault.new
 }
