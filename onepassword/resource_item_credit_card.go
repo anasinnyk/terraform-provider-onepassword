@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceItemCreditCard() *schema.Resource {
@@ -65,7 +64,7 @@ func resourceItemCreditCard() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							ForceNew: true,
-							ValidateFunc: orEmpty(validation.StringInSlice([]string{
+							ValidateDiagFunc: stringInSliceDiag([]string{
 								"mc",
 								"visa",
 								"amex",
@@ -77,7 +76,7 @@ func resourceItemCreditCard() *schema.Resource {
 								"visaelectron",
 								"laser",
 								"unionpay",
-							}, false)),
+							}, true),
 						},
 						"number": {
 							Type:     schema.TypeString,
