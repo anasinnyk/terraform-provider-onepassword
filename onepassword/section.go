@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func sectionSchema() *schema.Resource {
@@ -33,10 +32,10 @@ func sectionSchema() *schema.Resource {
 							ForceNew: true,
 						},
 						"url": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ForceNew:     true,
-							ValidateFunc: urlValidate,
+							Type:             schema.TypeString,
+							Optional:         true,
+							ForceNew:         true,
+							ValidateDiagFunc: urlValidateDiag(),
 						},
 						"phone": {
 							Type:     schema.TypeString,
@@ -49,16 +48,16 @@ func sectionSchema() *schema.Resource {
 							Optional: true,
 						},
 						"sex": {
-							Type:         schema.TypeString,
-							ForceNew:     true,
-							Optional:     true,
-							ValidateFunc: orEmpty(validation.StringInSlice([]string{"female", "male"}, false)),
+							Type:             schema.TypeString,
+							ForceNew:         true,
+							Optional:         true,
+							ValidateDiagFunc: stringInSliceDiag([]string{"female", "male"}, true),
 						},
 						"card_type": {
 							Type:     schema.TypeString,
 							Optional: true,
 							ForceNew: true,
-							ValidateFunc: orEmpty(validation.StringInSlice([]string{
+							ValidateDiagFunc: stringInSliceDiag([]string{
 								"mc",
 								"visa",
 								"amex",
@@ -70,13 +69,13 @@ func sectionSchema() *schema.Resource {
 								"visaelectron",
 								"laser",
 								"unionpay",
-							}, false)),
+							}, true),
 						},
 						"email": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ForceNew:     true,
-							ValidateFunc: emailValidate,
+							Type:             schema.TypeString,
+							Optional:         true,
+							ForceNew:         true,
+							ValidateDiagFunc: emailValidateDiag(),
 						},
 						"date": {
 							Type:     schema.TypeInt,

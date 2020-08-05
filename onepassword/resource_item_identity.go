@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceItemIdentity() *schema.Resource {
@@ -76,10 +75,10 @@ func resourceItemIdentity() *schema.Resource {
 							ForceNew: true,
 						},
 						"sex": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ForceNew:     true,
-							ValidateFunc: orEmpty(validation.StringInSlice([]string{"male", "female"}, false)),
+							Type:             schema.TypeString,
+							Optional:         true,
+							ForceNew:         true,
+							ValidateDiagFunc: stringInSliceDiag([]string{"male", "female"}, true),
 						},
 						"birth_date": {
 							Type:     schema.TypeInt,
@@ -167,10 +166,10 @@ func resourceItemIdentity() *schema.Resource {
 							ForceNew: true,
 						},
 						"email": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							ForceNew:     true,
-							ValidateFunc: emailValidate,
+							Type:             schema.TypeString,
+							Optional:         true,
+							ForceNew:         true,
+							ValidateDiagFunc: emailValidateDiag(),
 						},
 						"field": sectionSchema().Schema["field"],
 					},

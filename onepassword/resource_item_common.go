@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceItemCommon() *schema.Resource {
@@ -37,7 +36,7 @@ func resourceItemCommon() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				ValidateDiagFunc: stringInSliceDiag([]string{
 					string(DatabaseCategory),
 					string(MembershipCategory),
 					string(WirelessRouterCategory),

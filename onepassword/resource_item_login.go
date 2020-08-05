@@ -61,10 +61,10 @@ func resourceItemLogin() *schema.Resource {
 				Elem:     sectionSchema(),
 			},
 			"url": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ForceNew:     true,
-				ValidateFunc: urlValidate,
+				Type:             schema.TypeString,
+				Optional:         true,
+				ForceNew:         true,
+				ValidateDiagFunc: urlValidateDiag(),
 			},
 		},
 	}
