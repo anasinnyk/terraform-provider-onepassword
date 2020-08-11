@@ -73,6 +73,7 @@ func resourceGroupDelete(ctx context.Context, d *schema.ResourceData, meta inter
 	err := m.onePassClient.DeleteGroup(getID(d))
 	if err == nil {
 		d.SetId("")
+		return nil
 	}
 	return diag.FromErr(err)
 }
