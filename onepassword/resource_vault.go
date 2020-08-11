@@ -61,6 +61,7 @@ func resourceVaultDelete(ctx context.Context, d *schema.ResourceData, meta inter
 	err := m.onePassClient.DeleteVault(getID(d))
 	if err == nil {
 		d.SetId("")
+		return nil
 	}
 	return diag.FromErr(err)
 }

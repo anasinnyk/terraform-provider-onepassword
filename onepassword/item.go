@@ -311,6 +311,7 @@ func resourceItemDelete(ctx context.Context, d *schema.ResourceData, meta interf
 	err := m.onePassClient.DeleteItem(getID(d))
 	if err == nil {
 		d.SetId("")
+		return nil
 	}
 	return diag.FromErr(err)
 }
