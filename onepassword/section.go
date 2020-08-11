@@ -104,19 +104,6 @@ func sectionSchema() *schema.Resource {
 							Type:     schema.TypeList,
 							Optional: true,
 							ForceNew: true,
-							ConflictsWith: []string{
-								"section.field.string",
-								"section.field.url",
-								"section.field.phone",
-								"section.field.email",
-								"section.field.date",
-								"section.field.month_year",
-								"section.field.totp",
-								"section.field.concealed",
-								"section.field.sex",
-								"section.field.card_type",
-								"section.field.reference",
-							},
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"country": {
