@@ -262,7 +262,7 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 		args = append(args, fmt.Sprintf("--url=%s", v.Overview.URL))
 	}
 
-	if v.Overview.Title != "" {
+	if len(v.Overview.Tags) > 0 {
 		args = append(args, fmt.Sprintf("--tags=%s", strings.Join(v.Overview.Tags, ",")))
 	}
 
