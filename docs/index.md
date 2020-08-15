@@ -1,6 +1,6 @@
 # Provider
 
-Terraform provider for 1password usage with your infrastructure, for example you can share password from your admin panel via some vault in you 1password company account. This provider is based on 1Password CLI client version 0.5.5, but you can rewrite it by env variable `OP_VERSION`.
+Terraform provider for 1password usage with your infrastructure, for example you can share password from your admin panel via some vault in you 1password company account. This provider is based on 1Password CLI client version 1.4.0, but you can rewrite it by env variable `OP_VERSION`.
 
 ## Example Usage
 

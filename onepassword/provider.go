@@ -21,7 +21,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var version string = "0.7.1"
+var version string = "1.4.0"
 
 func Provider() *schema.Provider {
 	return &schema.Provider{
@@ -202,6 +202,10 @@ func installOPClient() (string, error) {
 		}
 		version = semVer.String()
 	}
+	if runtime.GOOS == "darwin" {
+		return "", fmt.Errorf("Unable to automatically install v%s of the op client. Please install manually from https://app-updates.agilebits.com/product_history/CLI", version)
+	}
+
 	binZip := fmt.Sprintf("/tmp/op_%s.zip", version)
 	if _, err := os.Stat(binZip); os.IsNotExist(err) {
 		resp, err := http.Get(fmt.Sprintf(
@@ -212,20 +216,20 @@ func installOPClient() (string, error) {
 			version,
 		))
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Could not retrieve zipped op release: %w", err)
 		}
 		defer resp.Body.Close()
 
 		out, err := os.Create(binZip)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Could not create temp file for op client: %w", err)
 		}
 		defer out.Close()
 		if _, err = io.Copy(out, resp.Body); err != nil {
-			return "", err
+			return "", fmt.Errorf("Could not copy zip contents to temp file for op client: %w", err)
 		}
 		if err := unzip(binZip, "/tmp/terraform-provider-onepassword/"+version); err != nil {
-			return "", err
+			return "", fmt.Errorf("Could not unzip temp file for op client: %w", err)
 		}
 	}
 	return "/tmp/terraform-provider-onepassword/" + version + "/op", nil
