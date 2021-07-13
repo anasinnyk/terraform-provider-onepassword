@@ -2,6 +2,7 @@ package onepassword
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -275,13 +276,21 @@ func (o *OnePassClient) CreateItem(v *Item) error {
 	return err
 }
 
-func (o *OnePassClient) ReadDocument(id string) (string, error) {
+func (o *OnePassClient) ReadDocument(id string, binary bool) (string, error) {
 	content, err := o.runCmd(
 		opPasswordGet,
 		DocumentResource,
 		id,
 	)
-	return string(content), err
+	if err != nil {
+		return "", err
+	}
+
+	if binary {
+		return base64.StdEncoding.EncodeToString(content), nil
+	}
+
+	return string(content), nil
 }
 
 func (o *OnePassClient) CreateDocument(v *Item, filePath string) error {

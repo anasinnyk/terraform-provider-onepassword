@@ -48,6 +48,12 @@ func resourceItemDocument() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"binary": {
+				Type:     schema.TypeBool,
+				ForceNew: true,
+				Optional: true,
+				Default:  false,
+			},
 		},
 	}
 }
@@ -74,7 +80,7 @@ func resourceItemDocumentRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.FromErr(err)
 	}
 
-	content, err := m.onePassClient.ReadDocument(v.UUID)
+	content, err := m.onePassClient.ReadDocument(v.UUID, d.Get("binary").(bool))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -98,7 +104,7 @@ func resourceItemDocumentCreate(ctx context.Context, d *schema.ResourceData, met
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	content, err := m.onePassClient.ReadDocument(item.UUID)
+	content, err := m.onePassClient.ReadDocument(item.UUID, d.Get("binary").(bool))
 	if err != nil {
 		return diag.FromErr(err)
 	}
