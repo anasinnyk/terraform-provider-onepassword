@@ -45,7 +45,7 @@ The `field` block support:
 The `address` block support:
 
 * `street` - (Optional) street information.
-* `counrty` - (Optional) ISO2 country code.
+* `country` - (Optional) ISO2 country code.
 * `state` - (Optional) state name.
 * `region` - (Optional) region name.
 * `city` - (Optional) city name.
